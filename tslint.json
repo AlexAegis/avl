@@ -10,7 +10,6 @@
 		},
 		"eofline": true,
 		"forin": true,
-		"import-blacklist": [true, "rxjs/Rx"],
 		"import-spacing": true,
 		"indent": [true, "tabs"],
 		"interface-over-type-literal": true,

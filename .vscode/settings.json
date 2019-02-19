@@ -33,5 +33,10 @@
 	"mochaExplorer.mochaPath": "node_modules/mocha",
 	"editor.codeActionsOnSave": {
 		"source.fixAll": true
-	}
+	},
+	"editor.suggest.localityBonus": true,
+	"editor.snippetSuggestions": "bottom",
+	"editor.wordBasedSuggestions": true,
+	"typescript.suggest.autoImports": false,
+	"typescript.implementationsCodeLens.enabled": true
 }

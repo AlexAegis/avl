@@ -45,75 +45,70 @@ export class Node<V, K extends number | string | V | Convertable<K> = number> {
 		this.h = 1 + Math.max(this.l ? this.l.h : 0, this.r ? this.r.h : 0);
 	}
 
-	tryConvert(k: K | Convertable<K>): void {
-		if ((k as Convertable<K>).convertTo) {
-			k = (<Convertable<K>>k).convertTo();
-			this._opts.comparator = undefined; // if its also comparable and convertable, only use the convert
-		} else if (this._opts.converter) {
-			k = this._opts.converter(k as V);
-			this._opts.comparator = undefined;
-			this._opts.converter = undefined;
-		}
-	}
-
 	/**
-	 * TODO: Check that triple equals
+	 * Searches for a Node containing a key
 	 */
 	search(k: K | Convertable<K>): V {
-		this.tryConvert(k);
-
-		if (this.k && (!!this._opts.comparator ? this._opts.comparator(k as K, this.k) === 0 : k === this.k)) {
+		if (this.k && k === this.k) {
 			return this.v as V;
-		} else if (!!this._opts.comparator ? this._opts.comparator(k as K, this.k) < 0 : k < this.k) {
+		} else if (k < this.k) {
 			if (this.l) return this.l.search(k);
 			else return undefined;
-		} else if (!!this._opts.comparator ? this._opts.comparator(k as K, this.k) > 0 : k > this.k) {
+		} else if (k > this.k) {
 			if (this.r) return this.r.search(k);
 			else return undefined;
 		}
 	}
 
-	set(k: K, v?: V) {
-		this.tryConvert(k);
-
-		if (
-			(!this.k && !this.v) ||
-			(!!this._opts.comparator ? this._opts.comparator(k as K, this.k) === 0 : k === this.k)
-		) {
+	/**
+	 * Sets the key to a specific value. Inserts the node in a key-order respecting manner
+	 */
+	set(k: K, v?: V): void {
+		if ((!this.k && !this.v) || k === this.k) {
 			this.k = k;
 			this.v = v;
-		} else if (!!this._opts.comparator ? this._opts.comparator(k as K, this.k) < 0 : k < this.k) {
+		} else if (k < this.k) {
 			if (this.l) this.l.set(k, v);
 			else this.l = new Node<V, K>(this._opts, { k, v });
-		} else if (!!this._opts.comparator ? this._opts.comparator(k as K, this.k) > 0 : k > this.k) {
+		} else if (k > this.k) {
 			if (this.r) this.r.set(k, v);
 			else this.r = new Node<V, K>(this._opts, { k, v });
 		}
 		this.calch();
 	}
 
+	/**
+	 * Generator function
+	 * that returns all the values of the nodes below and this in an ascending order
+	 */
 	*[Symbol.iterator](): IterableIterator<V> {
 		if (this.l) yield* this.l;
 		if (this.k) yield this.v;
 		if (this.r) yield* this.r;
 	}
 
+	/**
+	 * Generator function
+	 * that returns all the values of the nodes below and this in an descending order
+	 */
 	*descend(): IterableIterator<V> {
 		if (this.r) yield* this.r;
 		if (this.k) yield this.v;
 		if (this.l) yield* this.l;
 	}
 
+	/**
+	 * Returns all the nodes below and including this
+	 */
 	*nodes(): IterableIterator<Node<V, K>> {
 		if (this.l) yield* this.l.nodes();
 		yield this;
 		if (this.r) yield* this.r.nodes();
 	}
 
-	toString(): string {
-		return `l: ${this.l ? this.l.k : '-'} {k: ${this.k} v: ${this.v}} r: ${this.r ? this.r.k : '-'} h: ${this.h}`;
-	}
-
+	/**
+	 * Rebalances the tree below the node if the height differences are too big
+	 */
 	rebalance(): Node<V, K> {
 		if (this.l) this.l = this.l.rebalance();
 		if (this.r) this.r = this.r.rebalance();
@@ -130,11 +125,17 @@ export class Node<V, K extends number | string | V | Convertable<K> = number> {
 		} else return this;
 	}
 
+	/**
+	 * Performs a right-left rotation
+	 */
 	private rlrotate(): Node<V, K> {
 		this.r = this.r.rrotate();
 		return this.lrotate();
 	}
 
+	/**
+	 * Performs a left-right rotation
+	 */
 	private lrrotate(): Node<V, K> {
 		this.l = this.l.lrotate();
 		return this.rrotate();
@@ -164,5 +165,12 @@ export class Node<V, K extends number | string | V | Convertable<K> = number> {
 		if (this.l) this.l.calch();
 		root.calch();
 		return root;
+	}
+
+	/**
+	 * String representation of a node
+	 */
+	toString(): string {
+		return `l: ${this.l ? this.l.k : '-'} {k: ${this.k} v: ${this.v}} r: ${this.r ? this.r.k : '-'} h: ${this.h}`;
 	}
 }

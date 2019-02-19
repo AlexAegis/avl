@@ -5,13 +5,13 @@
 	"version": "0.2.2",
 	"private": false,
 	"license": "GPL-3.0-or-later",
-	"main": "./dist/avl.js",
-	"types": "./dist/avl.d.ts",
-	"homepage": "https://github.com/AlexAegis/avl",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"homepage": "https://github.com/AlexAegis/avl/",
 	"files": [
 		"dist/main/**/*",
-		"dist/avl.d.ts",
-		"dist/avl.js"
+		"dist/index.d.ts",
+		"dist/index.js"
 	],
 	"repository": {
 		"type": "git",
@@ -29,11 +29,10 @@
 	"scripts": {
 		"build": "tsc",
 		"test": "mocha --opts ./mocha.opts",
+		"test:watch": "mocha --opts ./mocha.opts -W",
 		"test:coverage": "nyc npm test",
 		"lint": "tslint --project .",
 		"typedoc": "typedoc --out ./doc && echo \"\" > ./doc/.nojekyll",
-		"version": "git add -A src test",
-		"postversion": "git push && git push --tags",
 		"deploy": "npm publish"
 	},
 	"categories": [
