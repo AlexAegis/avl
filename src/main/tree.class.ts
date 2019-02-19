@@ -1,6 +1,5 @@
 import { Node } from './node.class';
 import { Convertable } from './convertable.interface';
-import { Options } from './options.interface';
 
 /**
  * AVL Search Tree
@@ -18,27 +17,8 @@ export class Tree<V = number | string, K extends number | string | V | Convertab
 
 	/**
 	 * Creates an instance of AVL. Can set a converter from here.
-	 * Priority as follows:
-	 * 1.) opts.comparator
 	 */
-	constructor(private _opts: Options<V, K> = {}) {}
-
-	set opts(opts: Options<V, K>) {
-		Object.assign(this.opts, opts);
-		if (this.root) this.root.opts = this.opts;
-	}
-
-	get opts(): Options<V, K> {
-		return this._opts;
-	}
-
-	set converter(converter: (v: V) => K) {
-		this.opts.converter = converter;
-	}
-
-	get converter(): (v: V) => K {
-		return this.opts.converter;
-	}
+	constructor(private converter?: (v: V) => K) {}
 
 	/**
 	 * The push method tries to convert the value into a number to use it as a Key
@@ -56,7 +36,7 @@ export class Tree<V = number | string, K extends number | string | V | Convertab
 	 * sets a key to a value
 	 */
 	public set(k: K, v: V): void {
-		if (!this.root) this.root = new Node<V, K>(this.opts, { k, v });
+		if (!this.root) this.root = new Node<V, K>({ k, v });
 		else this.root.set(k, v);
 		this.root = this.root.rebalance();
 		this.root.calch();
@@ -144,8 +124,9 @@ export class Tree<V = number | string, K extends number | string | V | Convertab
 		}
 		if (!k && this.converter) {
 			k = this.converter.bind(v)(v);
+			console.log(`converter: ${this.converter} converted: ${k}, from v: ${v}`);
 		}
-		if (k) {
+		if (!!k) {
 			return k as K;
 		}
 		throw new Error(

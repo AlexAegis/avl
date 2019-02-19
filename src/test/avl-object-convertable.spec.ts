@@ -1,19 +1,22 @@
+import { BasicConvertable } from './model/basic-convertable.class';
+import { converter } from './model/converter.function';
 import { expect } from 'chai';
 import { Tree } from '../main/tree.class';
+import { Basic } from './model/basic.class';
 
-describe('Number tests', () => {
-	let tree: Tree;
+describe('Bad Converter and Convertable tests, where the interface takes priority', () => {
+	let tree: Tree<BasicConvertable>;
 	beforeEach(() => {
-		tree = new Tree();
-		tree.push(1);
-		tree.push(2);
-		tree.push(3);
-		tree.push(4);
+		tree = new Tree<BasicConvertable>();
+		tree.push(new BasicConvertable(1));
+		tree.push(new BasicConvertable(2));
+		tree.push(new BasicConvertable(3));
+		tree.push(new BasicConvertable(4));
 	});
 
-	it('should not be able to insert an already added number to the tree', () => {
+	it('should not be able to insert an already added object to the tree', () => {
 		const lengthBeforeAdd = tree.length;
-		tree.push(1);
+		tree.push(new BasicConvertable(2));
 		expect(tree.length).to.be.equal(lengthBeforeAdd);
 	});
 

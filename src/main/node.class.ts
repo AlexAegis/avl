@@ -1,25 +1,14 @@
 import { Convertable } from './convertable.interface';
-import { Options } from './options.interface';
-
 export class Node<V, K extends number | string | V | Convertable<K> = number> {
 	l: Node<V, K>;
 	r: Node<V, K>;
 	h: number;
 	k: K;
 	v: V;
-	constructor(private _opts: Options<V, K>, ...init: { k: K; v: V }[]) {
+	constructor(...init: { k: K; v: V }[]) {
 		for (const { k, v } of init) this.set(k, v);
 	}
 
-	/**
-	 * the opts in a node delete themself upon conversion (but not on comparing)
-	 * If ever needing to change the converter (or the comparator by that matter), this will help resetting it everywhere
-	 */
-	set opts(opts: Options<V, K>) {
-		if (this.l) this.l.opts = opts;
-		this._opts = opts;
-		if (this.r) this.r.opts = opts;
-	}
 	/**
 	 * Returns the first element.
 	 * Complexity: O(1)
@@ -69,10 +58,10 @@ export class Node<V, K extends number | string | V | Convertable<K> = number> {
 			this.v = v;
 		} else if (k < this.k) {
 			if (this.l) this.l.set(k, v);
-			else this.l = new Node<V, K>(this._opts, { k, v });
+			else this.l = new Node<V, K>({ k, v });
 		} else if (k > this.k) {
 			if (this.r) this.r.set(k, v);
-			else this.r = new Node<V, K>(this._opts, { k, v });
+			else this.r = new Node<V, K>({ k, v });
 		}
 		this.calch();
 	}
