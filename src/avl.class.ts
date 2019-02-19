@@ -26,7 +26,7 @@ export namespace AVL {
 	 * @template V
 	 * @template K by default it's a primitive
 	 */
-	export class Tree<V = number, K extends number | string | V | Convertable<K> = number | string> {
+	export class Tree<V = number | string, K extends number | string | V | Convertable<K> = number | string> {
 		root: Node<V, K>;
 
 		/**
