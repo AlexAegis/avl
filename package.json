@@ -2,12 +2,15 @@
 	"name": "@alexaegis/avl",
 	"displayName": "AVL.Tree",
 	"description": "Flexible AVL Tree for TypeScript",
-	"version": "0.1.6",
+	"version": "0.1.7",
 	"private": false,
 	"license": "GPL-3.0-or-later",
 	"main": "./dist/avl.class.js",
 	"types": "./dist/avl.class.d.ts",
 	"homepage": "https://github.com/AlexAegis/avl",
+	"files": [
+		"./dist/**/*"
+	],
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/AlexAegis/avl/"
