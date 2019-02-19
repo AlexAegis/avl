@@ -4,6 +4,14 @@
 
 Flexible AVL Tree for TypeScript
 
+## Usage
+
+Install with NPM
+
+```bash
+npm i @alexaegis/avl
+```
+
 ---
 
 ## Technologies
