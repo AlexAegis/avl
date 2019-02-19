@@ -2,7 +2,7 @@ import { Convertable } from './convertable.interface';
 import { Comparable } from './comparable.interface';
 export class Node<
 	V extends number | string | Convertable<K> | any = number | string,
-	K extends number | string | V | Comparable<V> = number | string
+	K extends number | string | V | Comparable<K> = number | string
 > {
 	l: Node<V, K>;
 	r: Node<V, K>;
@@ -34,7 +34,7 @@ export class Node<
 	/**
 	 * Calculates the height of the node. A leafs (node without either a left or a right node) height is
 	 */
-	calch(): void {
+	updateHeight(): void {
 		this.h = 1 + Math.max(this.l ? this.l.h : 0, this.r ? this.r.h : 0);
 	}
 
@@ -76,7 +76,7 @@ export class Node<
 			if (this.r) this.r.set(k, v);
 			else this.r = new Node<V, K>({ k, v });
 		}
-		this.calch();
+		this.updateHeight();
 	}
 
 	/**
@@ -150,9 +150,9 @@ export class Node<
 		const root: Node<V, K> = this.l;
 		this.l = root.r;
 		root.r = this;
-		this.calch();
-		if (this.r) this.r.calch();
-		root.calch();
+		this.updateHeight();
+		if (this.r) this.r.updateHeight();
+		root.updateHeight();
 		return root;
 	}
 
@@ -163,9 +163,9 @@ export class Node<
 		const root: Node<V, K> = this.r;
 		this.r = root.l;
 		root.l = this;
-		this.calch();
-		if (this.l) this.l.calch();
-		root.calch();
+		this.updateHeight();
+		if (this.l) this.l.updateHeight();
+		root.updateHeight();
 		return root;
 	}
 

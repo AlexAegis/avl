@@ -1,6 +1,7 @@
 import { Comparable } from './comparable.interface';
 import { Node } from './node.class';
 import { Convertable } from './convertable.interface';
+import { ConvertError } from './convert.error';
 
 /**
  * AVL Search Tree
@@ -18,7 +19,7 @@ import { Convertable } from './convertable.interface';
  */
 export class Tree<
 	V extends number | string | Convertable<K> | any = number | string,
-	K extends number | string | V | Comparable<V> = number | string
+	K extends number | string | V | Comparable<K> = number | string
 > {
 	private root: Node<V, K>;
 
@@ -67,7 +68,7 @@ export class Tree<
 		if (!this.root) this.root = new Node<V, K>({ k, v });
 		else this.root.set(k, v, this.comparator);
 		this.root = this.root.rebalance();
-		this.root.calch();
+		this.root.updateHeight();
 	}
 
 	/**
@@ -137,22 +138,15 @@ export class Tree<
 
 		if (converter) return converter.bind(v)(v);
 
-		if (typeof v === 'number' || typeof v === 'string' /*|| typeof v === 'bigint'*/) {
-			k = v as K;
-		}
-		if (!k && (v as Convertable<K>).convertTo) {
-			k = (v as Convertable<K>).convertTo();
-		}
-		if (!k && this.converter) {
-			k = this.converter.bind(v)(v);
-			console.log(`converter: ${this.converter} converted: ${k}, from v: ${v}`);
-		}
-		if (!!k) {
-			return k as K;
-		}
-		throw new Error(
-			'Cannot convert, no sufficient conversion method. Either use a Convertable or supply a converter'
-		);
+		if (typeof v === 'number' || typeof v === 'string') k = v as K;
+
+		if (!k && (v as Convertable<K>).convertTo) k = (v as Convertable<K>).convertTo();
+
+		if (!k && this.converter) k = this.converter.bind(v)(v);
+
+		if (!!k) return k as K;
+
+		throw new ConvertError();
 	}
 
 	/**
