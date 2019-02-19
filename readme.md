@@ -18,7 +18,7 @@ Import
 import { AVL } from '@alexaegis/avl';
 
 const tree = new AVL.Tree();
-tree
+
 ```
 
 ---
