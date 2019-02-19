@@ -1,8 +1,8 @@
-# [AVL.Tree](https://en.wikipedia.org/wiki/AVL_tree)
+# [AVL Tree](https://en.wikipedia.org/wiki/AVL_tree)
 
-[![Build Status](https://travis-ci.com/AlexAegis/avl.svg?branch=master)](https://travis-ci.com/AlexAegis/avl) [![npm (scoped)](https://img.shields.io/npm/v/@alexaegis/avl.svg?style=popout)](https://www.npmjs.com/package/@alexaegis/avl) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/35d7fb5b31c9407094abf49fc445cc48)](https://www.codacy.com/app/AlexAegis/avl?utm_source=github.com&utm_medium=referral&utm_content=AlexAegis/avl&utm_campaign=Badge_Grade) [![Maintainability](https://api.codeclimate.com/v1/badges/35161dd7d57e3759381a/maintainability)](https://codeclimate.com/github/AlexAegis/avl/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/35161dd7d57e3759381a/test_coverage)](https://codeclimate.com/github/AlexAegis/avl/test_coverage) [![Librariesio: dependencies](https://img.shields.io/librariesio/github/AlexAegis/avl.svg?style=popout)](https://libraries.io/github/AlexAegis/avl) [![Known Vulnerabilities](https://snyk.io/test/github/AlexAegis/avl/badge.svg?targetFile=package.json)](https://snyk.io/test/github/AlexAegis/avl?targetFile=package.json) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
+[![Build Status](https://travis-ci.com/AlexAegis/avl.svg?branch=master)](https://travis-ci.com/AlexAegis/avl) [![npm (scoped)](https://img.shields.io/npm/v/@alexaegis/avl.svg?style=popout)](https://www.npmjs.com/package/@alexaegis/avl) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/35d7fb5b31c9407094abf49fc445cc48)](https://www.codacy.com/app/AlexAegis/avl?utm_source=github.com&utm_medium=referral&utm_content=AlexAegis/avl&utm_campaign=Badge_Grade) [![Maintainability](https://api.codeclimate.com/v1/badges/35161dd7d57e3759381a/maintainability)](https://codeclimate.com/github/AlexAegis/avl/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/35161dd7d57e3759381a/test_coverage)](https://codeclimate.com/github/AlexAegis/avl/test_coverage) [![Known Vulnerabilities](https://snyk.io/test/github/AlexAegis/avl/badge.svg?targetFile=package.json)](https://snyk.io/test/github/AlexAegis/avl?targetFile=package.json) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
-Flexible AVL Tree for TypeScript
+Flexible AVL Tree for TypeScript and JavaScript
 
 ## Usage
 
@@ -12,14 +12,15 @@ Install with NPM
 npm i @alexaegis/avl
 ```
 
-Import
+Import and Create
 
 ```TypeScript
-import { AVL } from '@alexaegis/avl';
+import { Tree } from '@alexaegis/avl';
 
-const tree = new AVL.Tree();
-
+const tree = new Tree();
 ```
+
+> For more examples check the [mocha tests](./src/test/)
 
 ---
 
@@ -36,6 +37,10 @@ const tree = new AVL.Tree();
 ### [TypeScript](https://www.typescriptlang.org/)
 
 > **Typed superset** of JavaScript
+
+### [TSLint](https://palantir.github.io/tslint/)
+
+> **Linting** tool
 
 ### [Mocha](https://mochajs.org/)
 
@@ -61,7 +66,7 @@ const tree = new AVL.Tree();
 
 ## Services
 
-### [Travis](https://travis-ci.com/)
+### [Travis CI](https://travis-ci.com/)
 
 > **Continuous Integration** solution
 
@@ -76,10 +81,6 @@ const tree = new AVL.Tree();
 ### [Snyk](https://snyk.io/)
 
 > **Vulnerability** detection
-
-### [Libraries.io](https://libraries.io/)
-
-> **Dependency** watcher
 
 ### [Shields.io](https://shields.io/#/)
 
