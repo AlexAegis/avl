@@ -18,4 +18,7 @@ deploy:
     provider: npm
     email: alexaegis@gmail.com
     api_key:
-        secure: $NPM_AUTH_TOKEN
+        secure: o11oe8ML6WI5tRLQVYVWd6AhJ2zk2tst4yTAVRe3Ko7iDN6tkrj2P/+AjHQJYrcQByq+qpj9me2XwSDRWkUepMLuaV/5ET45s4iSwrkLzhhRrMmBVt/h8BlYZyYOsupcmDvjnJXoFtSUb9TlSf4iLYPPAI7atfZbPhjSDZqjeA7hGb7Al4pL9GKTlupyGwCcTopUl8gFbqL0YZh03/gZC8cH8E4c9yfkvPHgQBCMohi4Y0s+2h+PmtL9y6rA140DhKQ3Ui1lPvjmJyMkSv9sIEQKeZ4vUkvCVmCBLejK5kxuQX6S1uYNyu/lZR7t7hXBz4zWrjgVN6CidxnK0inJfMfSR95xtkBXcoCxnLH29om/mI9qLHUvjQwX5pvsvoHDXN7ZFhFquz4maocAGu28QsjLJDgiijKJbcPG9A5g8+Kyu+9gX1+NNC2FHMjsASFAnfv8FmRRCTYIK5QjCZ3IpZ+NiA6pSqfjb9vSc32HV6ZpgKOTErIfwgngPEZCbcK+twcS4DrgwSnLWozLSJdYhcXFx1t21vpYwIQaOJQFeDEYzO2mOldZrVSPKmeGzMuJc3lpMzK5OseJTzEamLuRbyi3rpwMonmx2xhvlpukmou/HxcVTu3UMdhvWPq1fScCT1IVkxfr/mBL/829hK6ZBZvRJL66aI6lRAAqS0OYPF4=
+    on:
+        tags: true
+        repo: AlexAegis/avl
