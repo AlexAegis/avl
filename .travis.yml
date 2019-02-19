@@ -10,18 +10,19 @@ before_script:
     - chmod +x ./cc-test-reporter
     - "./cc-test-reporter before-build"
 script:
+    - npm i
     - npm run test:coverage
     - npm run lint
+    - npm run typedoc
 
 after_script:
     - "./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT"
 
 before_deploy:
     - npm run build
-    - npm run typedoc
 deploy:
     - provider: pages
-      local_dir: dist/doc/
+      local_dir: doc/
       github_token: $GITHUB_TOKEN
       skip_cleanup: true
       on:
