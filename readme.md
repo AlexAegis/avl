@@ -1,5 +1,6 @@
 # [AVL.Tree](https://en.wikipedia.org/wiki/AVL_tree)
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/013283a711644fa5ae595393ea915b2a)](https://app.codacy.com/app/AlexAegis/avl?utm_source=github.com&utm_medium=referral&utm_content=AlexAegis/avl&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.com/AlexAegis/avl.svg?branch=master)](https://travis-ci.com/AlexAegis/avl) [![Maintainability](https://api.codeclimate.com/v1/badges/35161dd7d57e3759381a/maintainability)](https://codeclimate.com/github/AlexAegis/avl/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/35161dd7d57e3759381a/test_coverage)](https://codeclimate.com/github/AlexAegis/avl/test_coverage) [![Librariesio: dependencies](https://img.shields.io/librariesio/github/AlexAegis/avl.svg?style=popout)](https://libraries.io/github/AlexAegis/avl) [![Known Vulnerabilities](https://snyk.io/test/github/AlexAegis/avl/badge.svg?targetFile=package.json)](https://snyk.io/test/github/AlexAegis/avl?targetFile=package.json) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
 Flexible AVL Tree for TypeScript
