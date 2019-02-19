@@ -1,5 +1,9 @@
 import { Convertable } from './convertable.interface';
-export class Node<V, K extends number | string | V | Convertable<K> = number> {
+import { Comparable } from './comparable.interface';
+export class Node<
+	V extends number | string | Convertable<K> | any = number | string,
+	K extends number | string | V | Comparable<V> = number | string
+> {
 	l: Node<V, K>;
 	r: Node<V, K>;
 	h: number;
@@ -37,14 +41,17 @@ export class Node<V, K extends number | string | V | Convertable<K> = number> {
 	/**
 	 * Searches for a Node containing a key
 	 */
-	search(k: K | Convertable<K>): V {
-		if (this.k && k === this.k) {
+	search(k: K, comparator?: (a: K, b: K) => number): V {
+		if ((k as Comparable<K>).compareTo) {
+			comparator = (k as Comparable<K>).compareTo;
+		}
+		if (this.k && ((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) === 0 : this.k === k)) {
 			return this.v as V;
-		} else if (k < this.k) {
-			if (this.l) return this.l.search(k);
+		} else if ((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) < 0 : k < this.k) {
+			if (this.l) return this.l.search(k, comparator);
 			else return undefined;
-		} else if (k > this.k) {
-			if (this.r) return this.r.search(k);
+		} else if ((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) > 0 : k > this.k) {
+			if (this.r) return this.r.search(k, comparator);
 			else return undefined;
 		}
 	}
@@ -52,14 +59,20 @@ export class Node<V, K extends number | string | V | Convertable<K> = number> {
 	/**
 	 * Sets the key to a specific value. Inserts the node in a key-order respecting manner
 	 */
-	set(k: K, v?: V): void {
-		if ((!this.k && !this.v) || k === this.k) {
+	set(k: K, v: V, comparator?: (a: K, b: K) => number): void {
+		if ((k as Comparable<K>).compareTo) {
+			comparator = (k as Comparable<K>).compareTo;
+		}
+		if (
+			(!this.k && !this.v) ||
+			((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) === 0 : this.k === k)
+		) {
 			this.k = k;
 			this.v = v;
-		} else if (k < this.k) {
+		} else if ((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) < 0 : k < this.k) {
 			if (this.l) this.l.set(k, v);
 			else this.l = new Node<V, K>({ k, v });
-		} else if (k > this.k) {
+		} else if ((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) > 0 : k > this.k) {
 			if (this.r) this.r.set(k, v);
 			else this.r = new Node<V, K>({ k, v });
 		}

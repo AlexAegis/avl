@@ -1,3 +1,4 @@
+import { Comparable } from './comparable.interface';
 import { Node } from './node.class';
 import { Convertable } from './convertable.interface';
 
@@ -6,19 +7,25 @@ import { Convertable } from './convertable.interface';
  *
  * For examples check my mocha tests.
  *
+ * Comparable might make sense if both the keying and the comparing is done
+ *
+ *  ITS THE KEY THAT HAS TO BE COMPARABLE OR PRIMITIVE
  * TODO: deletion
  */
 
 /**
  * AVL Tree
  */
-export class Tree<V = number | string, K extends number | string | V | Convertable<K> = number | string> {
+export class Tree<
+	V extends number | string | Convertable<K> | any = number | string,
+	K extends number | string | V | Comparable<V> = number | string
+> {
 	private root: Node<V, K>;
 
 	/**
 	 * Creates an instance of AVL. Can set a converter from here.
 	 */
-	constructor(private converter?: (v: V) => K) {}
+	constructor(private converter?: (v: V) => K, private comparator?: (a: K, b: K) => number) {}
 
 	/**
 	 * The push method tries to convert the value into a number to use it as a Key
@@ -33,11 +40,32 @@ export class Tree<V = number | string, K extends number | string | V | Convertab
 	}
 
 	/**
+	 * Accessing a key would first check if the key is comparable or is there a comparator
+	 * if not, it tries to convert it
+	 */
+	public has(k: K): boolean {
+		if (!(k as Comparable<K>).compareTo && !this.comparator) {
+			k = this.convert(k);
+		}
+		if (this.root) return !!this.root.search(k, this.comparator);
+	}
+
+	/**
+	 * Returns with the value on the supplied key. undefined if there is no value on that key
+	 */
+	public get(k: K): V {
+		if (!(k as Comparable<K>).compareTo && !this.comparator) {
+			k = this.convert(k);
+		}
+		if (this.root) return this.root.search(k, this.comparator);
+	}
+
+	/**
 	 * sets a key to a value
 	 */
 	public set(k: K, v: V): void {
 		if (!this.root) this.root = new Node<V, K>({ k, v });
-		else this.root.set(k, v);
+		else this.root.set(k, v, this.comparator);
 		this.root = this.root.rebalance();
 		this.root.calch();
 	}
@@ -98,13 +126,6 @@ export class Tree<V = number | string, K extends number | string | V | Convertab
 	}
 
 	/**
-	 * Retruns with the value on the supplied key. undefined if there is no value on that key
-	 */
-	get(k: K): V {
-		if (this.root) return this.root.search(k);
-	}
-
-	/**
 	 * Tries to convert the value. If its a convertable it will use it's inner converter.
 	 * If not, it tries to use the supplied converter in the ops.
 	 * Or optionally you can supply a converter method, but this wont be saved into the Tree
@@ -119,8 +140,8 @@ export class Tree<V = number | string, K extends number | string | V | Convertab
 		if (typeof v === 'number' || typeof v === 'string' /*|| typeof v === 'bigint'*/) {
 			k = v as K;
 		}
-		if (!k && ((v as unknown) as Convertable<K>).convertTo) {
-			k = (<Convertable<K>>(v as unknown)).convertTo();
+		if (!k && (v as Convertable<K>).convertTo) {
+			k = (v as Convertable<K>).convertTo();
 		}
 		if (!k && this.converter) {
 			k = this.converter.bind(v)(v);
@@ -132,10 +153,6 @@ export class Tree<V = number | string, K extends number | string | V | Convertab
 		throw new Error(
 			'Cannot convert, no sufficient conversion method. Either use a Convertable or supply a converter'
 		);
-	}
-
-	has(k: K | Convertable<K>): boolean {
-		if (this.root) return !!this.get(this.convert(k));
 	}
 
 	/**
