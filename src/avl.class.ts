@@ -3,13 +3,9 @@
  *
  * For examples check my mocha tests.
  *
- *
  * TODO: deletion
- * // TODO: comparator  using a comparator on values would mean dynamic keying which would mean in worst case O(n / 2) insertion time and no way of acquiring the items only iterating through them in order, for which there are faster methods
- * TODO: comparator for keys.
  * TODO: priority
  * TODO: Tests
- * TODO: Publish to NPM
  */
 export namespace AVL {
 	export type Options<V, K> = { converter?: (v: V) => K; comparator?: (a: K, b: K) => number };
@@ -20,6 +16,7 @@ export namespace AVL {
 	export interface Comparable<T> {
 		compareTo(other: T): number;
 	}
+
 	export const defComp: <K>(a: K, b: K) => number = (a, b) => (a === b ? 0 : a > b ? 1 : -1);
 	/**
 	 *

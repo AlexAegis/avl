@@ -1,8 +1,9 @@
 {
 	"compilerOptions": {
 		"lib": ["es2017", "esnext.asynciterable"],
+		"declaration": true,
 		"module": "commonjs",
-		"target": "esnext",
+		"target": "es2015",
 		"noImplicitAny": true,
 		"rootDir": "./src/",
 		"outDir": "./dist/",
@@ -10,5 +11,5 @@
 		"typeRoots": ["./node_modules/@types"]
 	},
 	"include": ["./src/**/*"],
-	"exclude": ["**/node_modules/**/*"]
+	"exclude": ["**/node_modules/**/*", "**/*.spec.ts"]
 }

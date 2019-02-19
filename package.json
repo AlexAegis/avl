@@ -2,9 +2,11 @@
 	"name": "@alexaegis/avl",
 	"displayName": "AVL.Tree",
 	"description": "Flexible AVL Tree for TypeScript",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"private": false,
 	"license": "GPL-3.0-or-later",
+	"main": "dist/avl.class.js",
+	"types": "dist/avl.class.d.ts",
 	"homepage": "https://github.com/AlexAegis/avl",
 	"repository": {
 		"type": "git",
@@ -20,8 +22,10 @@
 		"url": "https://github.com/AlexAegis/avl/issues"
 	},
 	"scripts": {
+		"build": "tsc",
 		"test": "mocha --opts ./mocha.opts",
-		"test:coverage": "nyc npm test"
+		"test:coverage": "nyc npm test",
+		"deploy": "npm publish"
 	},
 	"categories": [
 		"Other"
@@ -41,15 +45,13 @@
 	},
 	"nyc": {
 		"extension": [
-			".ts",
-			".tsx"
+			".ts"
 		],
 		"include": [
 			"src/**/*.ts"
 		],
 		"exclude": [
 			"node_modules/",
-			"src/**/*.d.ts",
 			"src/**/*.spec.ts"
 		],
 		"reporter": [
