@@ -10,7 +10,6 @@ before_script:
     - chmod +x ./cc-test-reporter
     - "./cc-test-reporter before-build"
 script:
-    - npm i
     - npm run test:coverage
     - npm run lint
     - npm run typedoc
@@ -34,7 +33,7 @@ deploy:
       file: "avl-*.tgz"
       skip_cleanup: true
       on:
-          tags: true
+          tags: false
     - provider: npm
       email: alexaegis@gmail.com
       api_key:
