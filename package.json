@@ -5,8 +5,8 @@
 	"version": "0.1.9",
 	"private": false,
 	"license": "GPL-3.0-or-later",
-	"main": "./dist/avl.class.js",
-	"types": "./dist/avl.class.d.ts",
+	"main": "./dist/avl.js",
+	"types": "./dist/avl.d.ts",
 	"homepage": "https://github.com/AlexAegis/avl",
 	"files": [
 		"./dist/**/*"
