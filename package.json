@@ -9,7 +9,7 @@
 	"types": "./dist/avl.class.d.ts",
 	"homepage": "https://github.com/AlexAegis/avl",
 	"files": [
-		"/dist/**/*"
+		"./dist/**/*"
 	],
 	"repository": {
 		"type": "git",
