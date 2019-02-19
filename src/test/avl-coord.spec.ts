@@ -1,11 +1,10 @@
 import { Coord } from './model/coord.class';
-import { converter } from './model/converter.function';
 import { expect } from 'chai';
 import { Tree } from '../main/tree.class';
 import { Basic } from './model/basic.class';
 import { ConvertError } from '../main/convert.error';
 
-describe('Converter tests', () => {
+describe('Comparable tests', () => {
 	let tree: Tree<Basic, Coord>;
 	beforeEach(() => {
 		tree = new Tree<Basic, Coord>();
