@@ -25,6 +25,8 @@
 		"build": "tsc",
 		"test": "mocha --opts ./mocha.opts",
 		"test:coverage": "nyc npm test",
+		"typedoc": "typedoc --out doc && echo \"\" > ./doc/.nojekyll",
+		"posttypedoc": "echo \"\" > ./doc/.nojekyll",
 		"deploy": "npm publish"
 	},
 	"categories": [
@@ -41,6 +43,7 @@
 		"source-map-support": "^0.5.10",
 		"ts-node": "8.0.2",
 		"tslint": "~5.12.1",
+		"typedoc": "^0.14.2",
 		"typescript": "3.3.3"
 	},
 	"nyc": {

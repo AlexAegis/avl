@@ -8,17 +8,28 @@ before_script:
     - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
       > ./cc-test-reporter
     - chmod +x ./cc-test-reporter
-    - './cc-test-reporter before-build'
+    - "./cc-test-reporter before-build"
 script:
-    - npm run build
     - npm run test:coverage
+
 after_script:
-    - './cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT'
+    - "./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT"
+
+before_deploy:
+    - npm run build
+    - npm run typedoc
 deploy:
-    provider: npm
-    email: alexaegis@gmail.com
-    api_key:
-        secure: o11oe8ML6WI5tRLQVYVWd6AhJ2zk2tst4yTAVRe3Ko7iDN6tkrj2P/+AjHQJYrcQByq+qpj9me2XwSDRWkUepMLuaV/5ET45s4iSwrkLzhhRrMmBVt/h8BlYZyYOsupcmDvjnJXoFtSUb9TlSf4iLYPPAI7atfZbPhjSDZqjeA7hGb7Al4pL9GKTlupyGwCcTopUl8gFbqL0YZh03/gZC8cH8E4c9yfkvPHgQBCMohi4Y0s+2h+PmtL9y6rA140DhKQ3Ui1lPvjmJyMkSv9sIEQKeZ4vUkvCVmCBLejK5kxuQX6S1uYNyu/lZR7t7hXBz4zWrjgVN6CidxnK0inJfMfSR95xtkBXcoCxnLH29om/mI9qLHUvjQwX5pvsvoHDXN7ZFhFquz4maocAGu28QsjLJDgiijKJbcPG9A5g8+Kyu+9gX1+NNC2FHMjsASFAnfv8FmRRCTYIK5QjCZ3IpZ+NiA6pSqfjb9vSc32HV6ZpgKOTErIfwgngPEZCbcK+twcS4DrgwSnLWozLSJdYhcXFx1t21vpYwIQaOJQFeDEYzO2mOldZrVSPKmeGzMuJc3lpMzK5OseJTzEamLuRbyi3rpwMonmx2xhvlpukmou/HxcVTu3UMdhvWPq1fScCT1IVkxfr/mBL/829hK6ZBZvRJL66aI6lRAAqS0OYPF4=
-    on:
-        tags: false
-        repo: AlexAegis/avl
+    - provider: pages
+      skip_cleanup: true
+      local_dir: doc/
+      github_token: $GITHUB_TOKEN
+      on:
+          tags: false
+          repo: AlexAegis/avl
+    - provider: npm
+      email: alexaegis@gmail.com
+      api_key:
+          secure: o11oe8ML6WI5tRLQVYVWd6AhJ2zk2tst4yTAVRe3Ko7iDN6tkrj2P/+AjHQJYrcQByq+qpj9me2XwSDRWkUepMLuaV/5ET45s4iSwrkLzhhRrMmBVt/h8BlYZyYOsupcmDvjnJXoFtSUb9TlSf4iLYPPAI7atfZbPhjSDZqjeA7hGb7Al4pL9GKTlupyGwCcTopUl8gFbqL0YZh03/gZC8cH8E4c9yfkvPHgQBCMohi4Y0s+2h+PmtL9y6rA140DhKQ3Ui1lPvjmJyMkSv9sIEQKeZ4vUkvCVmCBLejK5kxuQX6S1uYNyu/lZR7t7hXBz4zWrjgVN6CidxnK0inJfMfSR95xtkBXcoCxnLH29om/mI9qLHUvjQwX5pvsvoHDXN7ZFhFquz4maocAGu28QsjLJDgiijKJbcPG9A5g8+Kyu+9gX1+NNC2FHMjsASFAnfv8FmRRCTYIK5QjCZ3IpZ+NiA6pSqfjb9vSc32HV6ZpgKOTErIfwgngPEZCbcK+twcS4DrgwSnLWozLSJdYhcXFx1t21vpYwIQaOJQFeDEYzO2mOldZrVSPKmeGzMuJc3lpMzK5OseJTzEamLuRbyi3rpwMonmx2xhvlpukmou/HxcVTu3UMdhvWPq1fScCT1IVkxfr/mBL/829hK6ZBZvRJL66aI6lRAAqS0OYPF4=
+      on:
+          tags: false
+          repo: AlexAegis/avl
