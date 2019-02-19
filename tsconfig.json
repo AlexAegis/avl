@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		"lib": ["es2017", "esnext.asynciterable"],
+		"module": "commonjs",
+		"target": "esnext",
+		"noImplicitAny": true,
+		"rootDir": "./src/",
+		"outDir": "./dist/",
+		"sourceMap": true,
+		"typeRoots": ["./node_modules/@types"]
+	},
+	"include": ["./src/**/*"],
+	"exclude": ["**/node_modules/**/*"]
+}

@@ -1,0 +1,60 @@
+{
+	"name": "@aegis/avl",
+	"displayName": "AVL.Tree",
+	"description": "Flexible AVL Tree for TypeScript",
+	"version": "0.1.0",
+	"private": true,
+	"license": "GPL-3.0-or-later",
+	"homepage": "https://github.com/AlexAegis/avl",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/AlexAegis/avl/"
+	},
+	"author": {
+		"name": "Alex Aegis",
+		"email": "alexaegis@gmail.com",
+		"url": "https://github.com/AlexAegis"
+	},
+	"bugs": {
+		"email": "alexaegis@gmail.com",
+		"url": "https://github.com/AlexAegis/avl/issues"
+	},
+	"scripts": {
+		"test": "mocha --opts ./mocha.opts",
+		"test:coverage": "nyc npm test"
+	},
+	"categories": [
+		"Other"
+	],
+	"dependencies": {},
+	"devDependencies": {
+		"@types/chai": "^4.1.7",
+		"@types/mocha": "^5.2.6",
+		"@types/node": "^11.9.4",
+		"chai": "^4.2.0",
+		"mocha": "^5.2.0",
+		"nyc": "^13.3.0",
+		"source-map-support": "^0.5.10",
+		"ts-node": "8.0.2",
+		"tslint": "~5.12.1",
+		"typescript": "3.3.3"
+	},
+	"nyc": {
+		"extension": [
+			".ts",
+			".tsx"
+		],
+		"include": [
+			"src/**/*.ts"
+		],
+		"exclude": [
+			"node_modules/",
+			"src/**/*.d.ts",
+			"src/**/*.spec.ts"
+		],
+		"reporter": [
+			"lcov"
+		],
+		"all": true
+	}
+}
