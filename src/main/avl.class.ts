@@ -1,4 +1,6 @@
 import { Node } from './node.class';
+import { Convertable } from './convertable.interface';
+import { Options } from './options.interface';
 
 /**
  * AVL Search Tree
@@ -9,19 +11,7 @@ import { Node } from './node.class';
  * TODO: priority
  * TODO: Tests
  */
-export interface Options<V, K> {
-	converter?: (v: V) => K;
-	comparator?: (a: K, b: K) => number;
-}
-export interface Convertable<T = number> {
-	convertTo(): T;
-}
 
-export interface Comparable<T> {
-	compareTo(other: T): number;
-}
-
-export const defComp: <K>(a: K, b: K) => number = (a, b) => (a === b ? 0 : a > b ? 1 : -1);
 /**
  * AVL Tree
  */
@@ -56,7 +46,12 @@ export class Tree<V = number | string, K extends number | string | V | Convertab
 	/**
 	 * Compares two values if 'a' is bigger than 'b' it returns a negative value
 	 *
-	 * Example when using numbers as values: (a: number, b: number) => a - b;
+	 * Example when using numbers as values:
+	 *
+	 * const comparator: <K>(a: K, b: K) => number = (a: number, b: number) => a - b;
+	 * Another example:
+	 *
+	 * const comparator: <K>(a: K, b: K) => number = (a, b) => (a === b ? 0 : a > b ? 1 : -1);
 	 */
 	set comparator(comparator: (a: K, b: K) => number) {
 		this._opts.comparator = comparator;

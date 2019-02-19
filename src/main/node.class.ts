@@ -1,4 +1,5 @@
-import { Convertable, Options } from './avl.class';
+import { Convertable } from './convertable.interface';
+import { Options } from './options.interface';
 
 export class Node<V, K extends number | string | V | Convertable<K> = number> {
 	l: Node<V, K>;
