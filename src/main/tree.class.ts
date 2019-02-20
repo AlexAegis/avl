@@ -33,11 +33,13 @@ export class Tree<
 	 * if it has a convertTo method (suggested, but not necessarily by the Convertable interface)
 	 * it will use that. If not, but you've set a converter
 	 */
-	public push(...input: V[]): void {
+	public push(...input: V[]): boolean {
+		let brandNew = false;
 		for (const v of input) {
 			const k: K = this.convert(v as K);
-			if (k !== undefined) this.set(k as K, v);
+			if (k !== undefined) brandNew = brandNew || this.set(k as K, v);
 		}
+		return brandNew;
 	}
 
 	/**
@@ -64,20 +66,24 @@ export class Tree<
 	/**
 	 * sets a key to a value
 	 */
-	public set(k: K, v: V): void {
+	public set(k: K, v: V): boolean {
+		let overwrite = false;
 		if (!this.root) this.root = new Node<V, K>({ k, v });
-		else this.root.set(k, v, this.comparator);
+		else overwrite = this.root.set(k, v, this.comparator);
 		this.root = this.root.rebalance();
 		this.root.updateHeight();
+		return !overwrite;
 	}
 
 	/**
 	 * Sets multiple values to multiple keys
 	 */
-	public put(...input: { k: K; v: V }[]) {
+	public put(...input: { k: K; v: V }[]): boolean {
+		let brandNew = false;
 		for (const { k, v } of input) {
-			this.set(k, v);
+			brandNew = brandNew || this.set(k, v);
 		}
+		return brandNew;
 	}
 
 	/**

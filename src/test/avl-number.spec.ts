@@ -14,7 +14,7 @@ describe('AVL Number tests', () => {
 
 	it('should not be able to insert an already added number to the tree', () => {
 		const lengthBeforeAdd = tree.length;
-		tree.push(1);
+		expect(tree.push(1)).to.be.false;
 		expect(tree.length).to.be.equal(lengthBeforeAdd);
 	});
 
@@ -41,9 +41,9 @@ describe('AVL Number tests', () => {
 	});
 
 	it('should be able to return the smallest value even if its a negative', () => {
-		tree.push(-1);
-		tree.push(-3);
-		tree.push(-2);
+		expect(tree.push(-1)).to.be.true;
+		expect(tree.push(-3)).to.be.true;
+		expect(tree.push(-2)).to.be.true;
 		expect(tree.min()).to.equal(-3);
 	});
 });

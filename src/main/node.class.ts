@@ -62,7 +62,8 @@ export class Node<
 	/**
 	 * Sets the key to a specific value. Inserts the node in a key-order respecting manner
 	 */
-	set(k: K, v: V, comparator?: (a: K, b: K) => number): void {
+	set(k: K, v: V, comparator?: (a: K, b: K) => number): boolean {
+		let overwrite = false;
 		if ((k as Comparable<K>).compareTo) {
 			comparator = (k as Comparable<K>).compareTo;
 		}
@@ -72,14 +73,16 @@ export class Node<
 		) {
 			this.k = k;
 			this.v = v;
+			overwrite = true;
 		} else if ((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) < 0 : k < this.k) {
-			if (this.l) this.l.set(k, v);
+			if (this.l) return this.l.set(k, v);
 			else this.l = new Node<V, K>({ k, v });
 		} else if ((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) > 0 : k > this.k) {
-			if (this.r) this.r.set(k, v);
+			if (this.r) return this.r.set(k, v);
 			else this.r = new Node<V, K>({ k, v });
 		}
 		this.updateHeight();
+		return overwrite;
 	}
 
 	/**
