@@ -33,7 +33,7 @@ deploy:
       file: "avl-*.tgz"
       skip_cleanup: true
       on:
-          tags: false
+          tags: true
     - provider: npm
       email: alexaegis@gmail.com
       api_key:

@@ -46,7 +46,7 @@ export class Node<
 			comparator = (k as Comparable<K>).compareTo;
 		}
 		if (
-			(this.k || this.k === 0) &&
+			this.k !== undefined &&
 			((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) === 0 : this.k === k)
 		) {
 			return this.v as V;

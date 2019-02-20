@@ -20,6 +20,7 @@ describe('AVL Number tests', () => {
 
 	it('should be able to check if a number is in the tree', () => {
 		expect(tree.has(3)).to.be.ok;
+		expect(tree.has(0)).to.be.ok;
 	});
 
 	it('should be able to return a number if its in the tree', () => {

@@ -36,7 +36,7 @@ export class Tree<
 	public push(...input: V[]): void {
 		for (const v of input) {
 			const k: K = this.convert(v as K);
-			if (k || k === 0) this.set(k as K, v);
+			if (k !== undefined) this.set(k as K, v);
 		}
 	}
 
@@ -48,7 +48,7 @@ export class Tree<
 		if (!(k as Comparable<K>).compareTo && !this.comparator) {
 			k = this.convert(k);
 		}
-		if (this.root) return !!this.root.search(k, this.comparator);
+		if (this.root) return this.root.search(k, this.comparator) !== undefined;
 	}
 
 	/**
@@ -144,7 +144,7 @@ export class Tree<
 
 		if (!k && this.converter) k = this.converter.bind(v)(v);
 
-		if (!!k || k === 0) return k as K;
+		if (k !== undefined) return k as K;
 
 		throw new ConvertError();
 	}
