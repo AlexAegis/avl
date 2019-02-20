@@ -12,6 +12,7 @@ import { ConvertError } from './convert.error';
  *
  *  ITS THE KEY THAT HAS TO BE COMPARABLE OR PRIMITIVE
  * TODO: deletion
+ * TODO: might be faster if all the tree operatons are on the tree and not the node
  */
 
 /**
