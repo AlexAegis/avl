@@ -45,7 +45,10 @@ export class Node<
 		if ((k as Comparable<K>).compareTo) {
 			comparator = (k as Comparable<K>).compareTo;
 		}
-		if (this.k && ((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) === 0 : this.k === k)) {
+		if (
+			(this.k || this.k === 0) &&
+			((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) === 0 : this.k === k)
+		) {
 			return this.v as V;
 		} else if ((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) < 0 : k < this.k) {
 			if (this.l) return this.l.search(k, comparator);
@@ -64,7 +67,7 @@ export class Node<
 			comparator = (k as Comparable<K>).compareTo;
 		}
 		if (
-			(!this.k && !this.v) ||
+			(this.k === undefined && this.v === undefined) ||
 			((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) === 0 : this.k === k)
 		) {
 			this.k = k;

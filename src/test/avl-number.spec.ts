@@ -5,8 +5,9 @@ describe('AVL Number tests', () => {
 	let tree: Tree;
 	beforeEach(() => {
 		tree = new Tree();
-		tree.push(1);
 		tree.push(2);
+		tree.push(1);
+		tree.push(0);
 		tree.push(3);
 		tree.push(4);
 	});
@@ -17,12 +18,17 @@ describe('AVL Number tests', () => {
 		expect(tree.length).to.be.equal(lengthBeforeAdd);
 	});
 
-	it('should be able to check is a number is in the tree', () => {
+	it('should be able to check if a number is in the tree', () => {
 		expect(tree.has(3)).to.be.ok;
 	});
 
-	it('should be able to check is a number is not the tree', () => {
-		expect(tree.has(-1)).to.be.not.ok;
+	it('should be able to return a number if its in the tree', () => {
+		expect(tree.get(3)).to.be.ok;
+		expect(tree.get(0)).to.equal(0);
+	});
+
+	it('should be able to return undefined if its not in the tree', () => {
+		expect(tree.get(-1)).to.be.not.ok;
 	});
 
 	it('should be able to return the largest value', () => {
@@ -30,7 +36,7 @@ describe('AVL Number tests', () => {
 	});
 
 	it('should be able to return the smallest value', () => {
-		expect(tree.min()).to.equal(1);
+		expect(tree.min()).to.equal(0);
 	});
 
 	it('should be able to return the smallest value even if its a negative', () => {
