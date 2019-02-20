@@ -10,29 +10,51 @@ export class Node<
 	k: K;
 	v: V;
 	constructor(...init: { k: K; v: V }[]) {
-		for (const { k, v } of init) Node.set(this, k, v);
+		for (const { k, v } of init) this.set(k, v);
+	}
+
+	/**
+	 * Returns the first element.
+	 * Complexity: O(1)
+	 */
+	first(): Node<V, K> {
+		if (this.l) return this.l.first();
+		else return this;
+	}
+
+	/**
+	 * Returns the last element.
+	 * Complexity: O(1)
+	 */
+	last(): Node<V, K> {
+		if (this.r) return this.r.last();
+		else return this;
+	}
+
+	/**
+	 * Calculates the height of the node. A leafs (node without either a left or a right node) height is
+	 */
+	updateHeight(): void {
+		this.h = 1 + Math.max(this.l ? this.l.h : 0, this.r ? this.r.h : 0);
 	}
 
 	/**
 	 * Searches for a Node containing a key
 	 */
-	static search<
-		V extends number | string | Convertable<K> | any = number | string,
-		K extends number | string | V | Comparable<K> = number | string
-	>(node: Node<V, K>, k: K, comparator?: (a: K, b: K) => number): V {
+	search(k: K, comparator?: (a: K, b: K) => number): V {
 		if ((k as Comparable<K>).compareTo) {
 			comparator = (k as Comparable<K>).compareTo;
 		}
 		if (
-			node.k !== undefined &&
-			((k as Comparable<K>).compareTo ? comparator.bind(k)(node.k) === 0 : node.k === k)
+			this.k !== undefined &&
+			((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) === 0 : this.k === k)
 		) {
-			return node.v as V;
-		} else if ((k as Comparable<K>).compareTo ? comparator.bind(k)(node.k) < 0 : k < node.k) {
-			if (node.l) return Node.search(node.l, k, comparator);
+			return this.v as V;
+		} else if ((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) < 0 : k < this.k) {
+			if (this.l) return this.l.search(k, comparator);
 			else return undefined;
-		} else if ((k as Comparable<K>).compareTo ? comparator.bind(k)(node.k) > 0 : k > node.k) {
-			if (node.r) return Node.search(node.r, k, comparator);
+		} else if ((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) > 0 : k > this.k) {
+			if (this.r) return this.r.search(k, comparator);
 			else return undefined;
 		}
 	}
@@ -40,108 +62,123 @@ export class Node<
 	/**
 	 * Sets the key to a specific value. Inserts the node in a key-order respecting manner
 	 */
-	static set<
-		V extends number | string | Convertable<K> | any = number | string,
-		K extends number | string | V | Comparable<K> = number | string
-	>(node: Node<V, K>, k: K, v: V, comparator?: (a: K, b: K) => number): boolean {
+	set(k: K, v: V, comparator?: (a: K, b: K) => number): boolean {
 		let overwrite = false;
 		if ((k as Comparable<K>).compareTo) {
 			comparator = (k as Comparable<K>).compareTo;
 		}
 		if (
-			(node.k === undefined && node.v === undefined) ||
-			((k as Comparable<K>).compareTo ? comparator.bind(k)(node.k) === 0 : node.k === k)
+			(this.k === undefined && this.v === undefined) ||
+			((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) === 0 : this.k === k)
 		) {
-			node.k = k;
-			node.v = v;
+			this.k = k;
+			this.v = v;
 			overwrite = true;
-		} else if ((k as Comparable<K>).compareTo ? comparator.bind(k)(node.k) < 0 : k < node.k) {
-			if (node.l) return Node.set(node.l, k, v);
-			else node.l = new Node<V, K>({ k, v });
-		} else if ((k as Comparable<K>).compareTo ? comparator.bind(k)(node.k) > 0 : k > node.k) {
-			if (node.r) return Node.set(node.r, k, v);
-			else node.r = new Node<V, K>({ k, v });
+		} else if ((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) < 0 : k < this.k) {
+			if (this.l) return this.l.set(k, v);
+			else this.l = new Node<V, K>({ k, v });
+		} else if ((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) > 0 : k > this.k) {
+			if (this.r) return this.r.set(k, v);
+			else this.r = new Node<V, K>({ k, v });
 		}
-		Node.updateHeight(node);
+		this.updateHeight();
 		return overwrite;
-	}
-
-	/**
-	 * Returns the first element.
-	 * Complexity: O(1)
-	 */
-	static first<
-		V extends number | string | Convertable<K> | any = number | string,
-		K extends number | string | V | Comparable<K> = number | string
-	>(node: Node<V, K>): Node<V, K> {
-		if (node.l) return Node.first(node.l);
-		else return node;
-	}
-
-	/**
-	 * Returns the last element.
-	 * Complexity: O(1)
-	 */
-	static last<
-		V extends number | string | Convertable<K> | any = number | string,
-		K extends number | string | V | Comparable<K> = number | string
-	>(node: Node<V, K>): Node<V, K> {
-		if (node.r) return Node.last(node.r);
-		else return node;
-	}
-
-	/**
-	 * Calculates the height of the node. A leafs (node without either a left or a right node) height is
-	 */
-	static updateHeight<
-		V extends number | string | Convertable<K> | any = number | string,
-		K extends number | string | V | Comparable<K> = number | string
-	>(node: Node<V, K>): void {
-		node.h = 1 + Math.max(node.l ? node.l.h : 0, node.r ? node.r.h : 0);
-	}
-
-	/**
-	 * Returns all the nodes below and including this
-	 */
-
-	static *nodes<
-		V extends number | string | Convertable<K> | any = number | string,
-		K extends number | string | V | Comparable<K> = number | string
-	>(node: Node<V, K>): IterableIterator<Node<V, K>> {
-		if (node.l) yield* Node.nodes(node.l);
-		yield node;
-		if (node.r) yield* Node.nodes(node.r);
 	}
 
 	/**
 	 * Generator function
 	 * that returns all the values of the nodes below and this in an ascending order
 	 */
-	static *ascend<
-		V extends number | string | Convertable<K> | any = number | string,
-		K extends number | string | V | Comparable<K> = number | string
-	>(node: Node<V, K>): IterableIterator<V> {
-		if (node.l) yield* Node.ascend(node.l);
-		if (node.k) yield node.v;
-		if (node.r) yield* Node.ascend(node.r);
+	*[Symbol.iterator](): IterableIterator<V> {
+		if (this.l) yield* this.l;
+		if (this.k) yield this.v;
+		if (this.r) yield* this.r;
 	}
-	/*
+
 	/**
 	 * Generator function
 	 * that returns all the values of the nodes below and this in an descending order
-
+	 */
 	*descend(): IterableIterator<V> {
 		if (this.r) yield* this.r;
 		if (this.k) yield this.v;
 		if (this.l) yield* this.l;
 	}
-*/
+
+	/**
+	 * Returns all the nodes below and including this
+	 */
+	*nodes(): IterableIterator<Node<V, K>> {
+		if (this.l) yield* this.l.nodes();
+		yield this;
+		if (this.r) yield* this.r.nodes();
+	}
+
+	/**
+	 * Rebalances the tree below the node if the height differences are too big
+	 */
+	rebalance(): Node<V, K> {
+		if (this.l) this.l = this.l.rebalance();
+		if (this.r) this.r = this.r.rebalance();
+		const lh = this.l ? this.l.h : 0;
+		const rh = this.r ? this.r.h : 0;
+		if (lh > rh + 1) {
+			if ((this.l && this.l.l && this.l.l.h) || 0 > (this.l && this.l.r && this.l.r.h) || 0) {
+				return this.rrotate();
+			} else return this.lrrotate();
+		} else if (rh > lh + 1) {
+			if ((this.r && this.r.r && this.r.r.h) || 0 > (this.r && this.r.l && this.r.l.h) || 0) {
+				return this.lrotate();
+			} else return this.rlrotate();
+		} else return this;
+	}
+
+	/**
+	 * Performs a right-left rotation
+	 */
+	private rlrotate(): Node<V, K> {
+		this.r = this.r.rrotate();
+		return this.lrotate();
+	}
+
+	/**
+	 * Performs a left-right rotation
+	 */
+	private lrrotate(): Node<V, K> {
+		this.l = this.l.lrotate();
+		return this.rrotate();
+	}
+
+	/**
+	 * Performs a right rotation on the tree
+	 */
+	private rrotate(): Node<V, K> {
+		const root: Node<V, K> = this.l;
+		this.l = root.r;
+		root.r = this;
+		this.updateHeight();
+		if (this.r) this.r.updateHeight();
+		root.updateHeight();
+		return root;
+	}
+
+	/**
+	 * Performs a right rotation on the tree
+	 */
+	private lrotate(): Node<V, K> {
+		const root: Node<V, K> = this.r;
+		this.r = root.l;
+		root.l = this;
+		this.updateHeight();
+		if (this.l) this.l.updateHeight();
+		root.updateHeight();
+		return root;
+	}
 
 	/**
 	 * String representation of a node
 	 */
-	/*
 	toString(): string {
 		return `l: ${this.l ? this.l.k : '-'} {k: ${this.k} v: ${this.v}} r: ${this.r ? this.r.k : '-'} h: ${this.h}`;
-	}*/
+	}
 }

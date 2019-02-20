@@ -30,81 +30,6 @@ export class Tree<
 	constructor(private converter?: (v: V) => K, private comparator?: (a: K, b: K) => number) {}
 
 	/**
-	 * Rebalances the tree below the node if the height differences are too big
-	 */
-	static rebalance<
-		V extends number | string | Convertable<K> | any = number | string,
-		K extends number | string | V | Comparable<K> = number | string
-	>(node: Node<V, K>): Node<V, K> {
-		if (node.l) node.l = Tree.rebalance(node.l);
-		if (node.r) node.r = Tree.rebalance(node.r);
-		const lh = node.l ? node.l.h : 0;
-		const rh = node.r ? node.r.h : 0;
-		if (lh > rh + 1) {
-			if ((node.l && node.l.l && node.l.l.h) || 0 > (node.l && node.l.r && node.l.r.h) || 0) {
-				return Tree.rrotate<V, K>(node);
-			} else return Tree.lrrotate<V, K>(node);
-		} else if (rh > lh + 1) {
-			if ((node.r && node.r.r && node.r.r.h) || 0 > (node.r && node.r.l && node.r.l.h) || 0) {
-				return Tree.lrotate<V, K>(node);
-			} else return Tree.rlrotate<V, K>(node);
-		} else return node;
-	}
-
-	/**
-	 * Performs a right-left rotation
-	 */
-	static rlrotate<
-		V extends number | string | Convertable<K> | any = number | string,
-		K extends number | string | V | Comparable<K> = number | string
-	>(node: Node<V, K>): Node<V, K> {
-		node.r = Tree.rrotate<V, K>(node.r);
-		return Tree.lrotate<V, K>(node);
-	}
-
-	/**
-	 * Performs a left-right rotation
-	 */
-	static lrrotate<
-		V extends number | string | Convertable<K> | any = number | string,
-		K extends number | string | V | Comparable<K> = number | string
-	>(node: Node<V, K>): Node<V, K> {
-		node.l = Tree.lrotate<V, K>(node.l);
-		return Tree.rrotate<V, K>(node);
-	}
-
-	/**
-	 * Performs a right rotation on the tree
-	 */
-	static rrotate<
-		V extends number | string | Convertable<K> | any = number | string,
-		K extends number | string | V | Comparable<K> = number | string
-	>(node: Node<V, K>): Node<V, K> {
-		const root: Node<V, K> = node.l;
-		node.l = root.r;
-		root.r = node;
-		Node.updateHeight(node);
-		if (node.r) Node.updateHeight(node.r);
-		Node.updateHeight(root);
-		return root;
-	}
-
-	/**
-	 * Performs a right rotation on the tree
-	 */
-	static lrotate<
-		V extends number | string | Convertable<K> | any = number | string,
-		K extends number | string | V | Comparable<K> = number | string
-	>(node: Node<V, K>): Node<V, K> {
-		const root: Node<V, K> = node.r;
-		node.r = root.l;
-		root.l = node;
-		Node.updateHeight(node);
-		if (node.l) Node.updateHeight(node.l);
-		Node.updateHeight(root);
-		return root;
-	}
-	/**
 	 * The push method tries to convert the value into a number to use it as a Key
 	 * if it has a convertTo method (suggested, but not necessarily by the Convertable interface)
 	 * it will use that. If not, but you've set a converter
@@ -126,7 +51,7 @@ export class Tree<
 		if (!(k as Comparable<K>).compareTo && !this.comparator) {
 			k = this.convert(k);
 		}
-		if (this.root) return Node.search(this.root, k, this.comparator) !== undefined;
+		if (this.root) return this.root.search(k, this.comparator) !== undefined;
 	}
 
 	/**
@@ -136,7 +61,7 @@ export class Tree<
 		if (!(k as Comparable<K>).compareTo && !this.comparator) {
 			k = this.convert(k);
 		}
-		if (this.root) return Node.search(this.root, k, this.comparator);
+		if (this.root) return this.root.search(k, this.comparator);
 	}
 
 	/**
@@ -145,9 +70,9 @@ export class Tree<
 	public set(k: K, v: V): boolean {
 		let overwrite = false;
 		if (!this.root) this.root = new Node<V, K>({ k, v });
-		else overwrite = Node.set(this.root, k, v, this.comparator);
-		this.root = Tree.rebalance<V, K>(this.root);
-		Node.updateHeight(this.root);
+		else overwrite = this.root.set(k, v, this.comparator);
+		this.root = this.root.rebalance();
+		this.root.updateHeight();
 		return !overwrite;
 	}
 
@@ -167,7 +92,7 @@ export class Tree<
 	 * Complexity: O(1)
 	 */
 	min(): V {
-		return this.root ? Node.first(this.root).v : undefined;
+		return this.root ? this.root.first().v : undefined;
 	}
 
 	/**
@@ -175,7 +100,7 @@ export class Tree<
 	 * Complexity: O(1)
 	 */
 	max(): V {
-		return this.root ? Node.last(this.root).v : undefined;
+		return this.root ? this.root.last().v : undefined;
 	}
 
 	pop(): V {
@@ -235,20 +160,15 @@ export class Tree<
 	 * Iterate through the values in ascending order
 	 */
 	*[Symbol.iterator](): IterableIterator<V> {
-		if (this.root) yield* Node.ascend(this.root);
-	} /*nodes(): IterableIterator<Node<V, K>> {
-		if (this.root) yield* this.root.nodes();
-	}*/
-	/**
-	 * Complexity: O(n)
-	 */
+		if (this.root) yield* this.root;
+	}
 
 	/**
 	 * Iterate through the values in descending order
 	 */
-	/*descend(): IterableIterator<V> {
+	*descend(): IterableIterator<V> {
 		if (this.root) yield* this.root.descend();
-	}*/
+	}
 
 	/**
 	 * For debug purposes
@@ -256,7 +176,14 @@ export class Tree<
 	 * Complexity:
 	 *  call: O(1), iterating through: O(n)
 	 */
-	/*private*/ toArray(): Array<V> {
+	/*private*/ *nodes(): IterableIterator<Node<V, K>> {
+		if (this.root) yield* this.root.nodes();
+	}
+
+	/**
+	 * Complexity: O(n)
+	 */
+	toArray(): Array<V> {
 		const arr: Array<V> = [];
 		for (const v of this) arr.push(v);
 		return arr;
@@ -264,7 +191,7 @@ export class Tree<
 
 	toString(): string {
 		let acc = '';
-		for (const node of Node.nodes(this.root)) {
+		for (const node of this.nodes()) {
 			acc += node.toString() + '\n';
 		}
 		return acc;
