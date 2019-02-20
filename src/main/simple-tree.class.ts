@@ -28,6 +28,67 @@ export class SimpleTree {
 	constructor() {}
 
 	/**
+	 * Rebalances the tree below the node if the height differences are too big
+	 */
+	static rebalance(node: SimpleNode): SimpleNode {
+		if (node.l) node.l = SimpleTree.rebalance(node.l);
+		if (node.r) node.r = SimpleTree.rebalance(node.r);
+		const lh = node.l ? node.l.h : 0;
+		const rh = node.r ? node.r.h : 0;
+		if (lh > rh + 1) {
+			if ((node.l && node.l.l && node.l.l.h) || 0 > (node.l && node.l.r && node.l.r.h) || 0) {
+				return SimpleTree.rrotate(node);
+			} else return SimpleTree.lrrotate(node);
+		} else if (rh > lh + 1) {
+			if ((node.r && node.r.r && node.r.r.h) || 0 > (node.r && node.r.l && node.r.l.h) || 0) {
+				return SimpleTree.lrotate(node);
+			} else return SimpleTree.rlrotate(node);
+		} else return node;
+	}
+
+	/**
+	 * Performs a right-left rotation
+	 */
+	static rlrotate(node: SimpleNode): SimpleNode {
+		node.r = SimpleTree.rrotate(node.r);
+		return SimpleTree.lrotate(node);
+	}
+
+	/**
+	 * Performs a left-right rotation
+	 */
+	static lrrotate(node: SimpleNode): SimpleNode {
+		node.l = SimpleTree.lrotate(node.l);
+		return SimpleTree.rrotate(node);
+	}
+
+	/**
+	 * Performs a right rotation on the tree
+	 */
+	static rrotate(node: SimpleNode): SimpleNode {
+		const root: SimpleNode = node.l;
+		node.l = root.r;
+		root.r = node;
+		node.updateHeight();
+		if (node.r) node.r.updateHeight();
+		root.updateHeight();
+		return root;
+	}
+
+	/**
+	 * Performs a right rotation on the tree
+	 */
+	static lrotate(node: SimpleNode): SimpleNode {
+		const root: SimpleNode = node.r;
+		node.r = root.l;
+		root.l = node;
+		node.updateHeight();
+		if (node.l) node.l.updateHeight();
+		root.updateHeight();
+		return root;
+	}
+
+	/**
 	 * The push method tries to convert the value into a number to use it as a Key
 	 * if it has a convertTo method (suggested, but not necessarily by the Convertable interface)
 	 * it will use that. If not, but you've set a converter
@@ -62,7 +123,7 @@ export class SimpleTree {
 		let overwrite = false;
 		if (!this.root) this.root = new SimpleNode(v);
 		else overwrite = this.root.set(v);
-		this.root = this.root.rebalance();
+		this.root = SimpleTree.rebalance(this.root);
 		this.root.updateHeight();
 		return !overwrite;
 	}
@@ -77,32 +138,6 @@ export class SimpleTree {
 		}
 		return brandNew;
 	}
-
-	/**
-	 * Returns the first element.
-	 * Complexity: O(1)
-	 */
-	min(): number {
-		return this.root ? this.root.first().v : undefined;
-	}
-
-	/**
-	 * Returns the last element.
-	 * Complexity: O(1)
-	 */
-	max(): number {
-		return this.root ? this.root.last().v : undefined;
-	}
-
-	pop(): number {
-		// remove and return max
-		return undefined;
-	}
-
-	popFirst(): number {
-		return undefined;
-	}
-
 	/**
 	 * Sums up how many nodes there are in the Tree
 	 */
