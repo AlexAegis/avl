@@ -10,8 +10,7 @@
 	"homepage": "https://github.com/AlexAegis/avl/",
 	"files": [
 		"dist/main/**/*",
-		"dist/index.d.ts",
-		"dist/index.js"
+		"dist/index*"
 	],
 	"repository": {
 		"type": "git",
