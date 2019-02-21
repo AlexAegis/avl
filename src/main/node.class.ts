@@ -1,17 +1,14 @@
 import { Convertable } from './convertable.interface';
 import { Comparable } from './comparable.interface';
+import { Tree } from './tree.class';
 export class Node<
 	V extends number | string | Convertable<K> | any = number | string,
 	K extends number | string | V | Comparable<K> = number | string
 > {
 	l: Node<V, K>;
 	r: Node<V, K>;
-	h: number;
-	k: K;
-	v: V;
-	constructor(...init: { k: K; v: V }[]) {
-		for (const { k, v } of init) this.set(k, v);
-	}
+	h = 1;
+	constructor(public k: K, public v: V) {}
 
 	/**
 	 * Returns the first element.
@@ -62,8 +59,7 @@ export class Node<
 	/**
 	 * Sets the key to a specific value. Inserts the node in a key-order respecting manner
 	 */
-	set(k: K, v: V, comparator?: (a: K, b: K) => number): boolean {
-		let overwrite = false;
+	set(k: K, v: V, comparator?: (a: K, b: K) => number): Node<V, K> {
 		if ((k as Comparable<K>).compareTo) {
 			comparator = (k as Comparable<K>).compareTo;
 		}
@@ -73,16 +69,74 @@ export class Node<
 		) {
 			this.k = k;
 			this.v = v;
-			overwrite = true;
 		} else if ((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) < 0 : k < this.k) {
-			if (this.l) return this.l.set(k, v);
-			else this.l = new Node<V, K>({ k, v });
+			if (this.l) this.l = this.l.set(k, v);
+			else this.l = new Node<V, K>(k, v);
 		} else if ((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) > 0 : k > this.k) {
-			if (this.r) return this.r.set(k, v);
-			else this.r = new Node<V, K>({ k, v });
+			if (this.r) this.r = this.r.set(k, v);
+			else this.r = new Node<V, K>(k, v);
 		}
+		const res = this.rebalance();
 		this.updateHeight();
-		return overwrite;
+		return res;
+	}
+
+	remove(k: K, right: boolean, comparator?: (a: K, b: K) => number): void {
+		if ((k as Comparable<K>).compareTo) {
+			comparator = (k as Comparable<K>).compareTo;
+		}
+
+		if ((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) < 0 : k < this.k) {
+			if (this.l) this.l.remove(k, false, comparator);
+		} else if ((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) > 0 : k > this.k) {
+			if (this.r) this.r.remove(k, true, comparator);
+		} else if (
+			this.k !== undefined &&
+			((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) === 0 : this.k === k)
+		) {
+			/*
+			// Delete happens here
+			console.log(`parent: ${this.parent ? this.parent.toString() : 'no'} im: ${k} right? ${right}`);
+			// no child
+			if (!this.l && !this.r) {
+				if (right) {
+					this.parent.r = undefined;
+				} else {
+					this.parent.l = undefined;
+				}
+			}
+			// one child
+			if (!this.l && this.r) {
+				if (right) {
+					this.parent.r = this.r;
+				} else {
+					this.parent.l = this.r;
+				}
+			} else if (this.l && !this.r) {
+				if (right) {
+					this.parent.r = this.l;
+				} else {
+					this.parent.l = this.l;
+				}
+			}
+
+			// two child
+			if (this.l && this.r) {
+				if (right) {
+					const next = this.r.last();
+					this.parent.r = next;
+					next.r = this.r;
+					next.l = this.l;
+				} else {
+					const next = this.r.first();
+					this.parent.l = next;
+					next.r = this.r;
+					next.l = this.l;
+				}
+			}
+*/
+			// this.balanceChild();
+		}
 	}
 
 	/**
@@ -91,7 +145,7 @@ export class Node<
 	 */
 	*[Symbol.iterator](): IterableIterator<V> {
 		if (this.l) yield* this.l;
-		if (this.k) yield this.v;
+		if (this.k !== undefined) yield this.v;
 		if (this.r) yield* this.r;
 	}
 
@@ -101,7 +155,7 @@ export class Node<
 	 */
 	*descend(): IterableIterator<V> {
 		if (this.r) yield* this.r;
-		if (this.k) yield this.v;
+		if (this.k !== undefined) yield this.v;
 		if (this.l) yield* this.l;
 	}
 
@@ -118,16 +172,23 @@ export class Node<
 	 * Rebalances the tree below the node if the height differences are too big
 	 */
 	rebalance(): Node<V, K> {
-		if (this.l) this.l = this.l.rebalance();
-		if (this.r) this.r = this.r.rebalance();
+		// if (this.l) this.l = this.l.rebalance();
+		// if (this.r) this.r = this.r.rebalance();
+		console.log(`rebalance: ${this.toString()}`);
 		const lh = this.l ? this.l.h : 0;
 		const rh = this.r ? this.r.h : 0;
+		const llh = (this.l && this.l.l && this.l.l.h) || 0;
+		const lrh = (this.l && this.l.r && this.l.r.h) || 0;
+		const rrh = (this.r && this.r.r && this.r.r.h) || 0;
+		const rlh = (this.r && this.r.l && this.r.l.h) || 0;
+		// console.log(`lh: ${lh}, rh: ${rh}`);
+		// console.log(`llh: ${llh}, lrh: ${lrh}, rrh: ${rrh}, rlh: ${rlh}`);
 		if (lh > rh + 1) {
-			if ((this.l && this.l.l && this.l.l.h) || 0 > (this.l && this.l.r && this.l.r.h) || 0) {
+			if (llh > lrh) {
 				return this.rrotate();
 			} else return this.lrrotate();
 		} else if (rh > lh + 1) {
-			if ((this.r && this.r.r && this.r.r.h) || 0 > (this.r && this.r.l && this.r.l.h) || 0) {
+			if (rrh > rlh) {
 				return this.lrotate();
 			} else return this.rlrotate();
 		} else return this;
@@ -137,6 +198,7 @@ export class Node<
 	 * Performs a right-left rotation
 	 */
 	private rlrotate(): Node<V, K> {
+		console.log(`rlrotate`);
 		this.r = this.r.rrotate();
 		return this.lrotate();
 	}
@@ -145,6 +207,7 @@ export class Node<
 	 * Performs a left-right rotation
 	 */
 	private lrrotate(): Node<V, K> {
+		console.log(`lrrotate`);
 		this.l = this.l.lrotate();
 		return this.rrotate();
 	}
@@ -153,6 +216,7 @@ export class Node<
 	 * Performs a right rotation on the tree
 	 */
 	private rrotate(): Node<V, K> {
+		console.log(`rrotate`);
 		const root: Node<V, K> = this.l;
 		this.l = root.r;
 		root.r = this;
@@ -166,6 +230,7 @@ export class Node<
 	 * Performs a right rotation on the tree
 	 */
 	private lrotate(): Node<V, K> {
+		console.log(`lrotate`);
 		const root: Node<V, K> = this.r;
 		this.r = root.l;
 		root.l = this;
@@ -179,6 +244,7 @@ export class Node<
 	 * String representation of a node
 	 */
 	toString(): string {
-		return `l: ${this.l ? this.l.k : '-'} {k: ${this.k} v: ${this.v}} r: ${this.r ? this.r.k : '-'} h: ${this.h}`;
+		// return `l: ${this.l ? this.l.k : '-'} {k: ${this.k} v: ${this.v}} r: ${this.r ? this.r.k : '-'} h: ${this.h}`;
+		return `${this.l ? this.l.k : '-'}<{${this.k}}>${this.r ? this.r.k : '-'}`;
 	}
 }

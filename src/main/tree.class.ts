@@ -10,9 +10,7 @@ import { ConvertError } from './convert.error';
  *
  * Comparable might make sense if both the keying and the comparing is done
  *
- *  ITS THE KEY THAT HAS TO BE COMPARABLE OR PRIMITIVE
  * TODO: deletion
- * TODO: might be faster if all the tree operatons are on the tree and not the node
  */
 
 /**
@@ -22,25 +20,28 @@ export class Tree<
 	V extends number | string | Convertable<K> | any = number | string,
 	K extends number | string | V | Comparable<K> = number | string
 > {
-	private root: Node<V, K>;
+	root: Node<V, K>;
 
 	/**
 	 * Creates an instance of AVL. Can set a converter from here.
 	 */
 	constructor(private converter?: (v: V) => K, private comparator?: (a: K, b: K) => number) {}
 
+	get height(): number {
+		return this.root ? this.root.h : 0;
+	}
 	/**
 	 * The push method tries to convert the value into a number to use it as a Key
 	 * if it has a convertTo method (suggested, but not necessarily by the Convertable interface)
 	 * it will use that. If not, but you've set a converter
 	 */
-	public push(...input: V[]): boolean {
-		let brandNew = false;
+	public push(...input: V[]): void {
 		for (const v of input) {
 			const k: K = this.convert(v as K);
-			if (k !== undefined) brandNew = brandNew || this.set(k as K, v);
+			if (k !== undefined) this.set(k as K, v);
+			console.log(`pushed ${v}`);
+			this.print();
 		}
-		return brandNew;
 	}
 
 	/**
@@ -64,27 +65,36 @@ export class Tree<
 		if (this.root) return this.root.search(k, this.comparator);
 	}
 
+	public remove(k: K): V {
+		if (!(k as Comparable<K>).compareTo && !this.comparator) {
+			k = this.convert(k);
+		}
+		if (this.root) {
+			this.root.remove(k, undefined, this.comparator);
+
+			if (this.root.k === undefined && this.root.v === undefined) {
+				this.root = undefined;
+			}
+			// this.root = this.root.rebalance();
+			return undefined;
+		} else return undefined;
+	}
+
 	/**
 	 * sets a key to a value
 	 */
-	public set(k: K, v: V): boolean {
-		let overwrite = false;
-		if (!this.root) this.root = new Node<V, K>({ k, v });
-		else overwrite = this.root.set(k, v, this.comparator);
-		this.root = this.root.rebalance();
-		this.root.updateHeight();
-		return !overwrite;
+	public set(k: K, v: V): void {
+		if (!this.root) this.root = new Node<V, K>(k, v);
+		else this.root = this.root.set(k, v, this.comparator);
 	}
 
 	/**
 	 * Sets multiple values to multiple keys
 	 */
-	public put(...input: { k: K; v: V }[]): boolean {
-		let brandNew = false;
+	public put(...input: { k: K; v: V }[]): void {
 		for (const { k, v } of input) {
-			brandNew = brandNew || this.set(k, v);
+			this.set(k, v);
 		}
-		return brandNew;
 	}
 
 	/**
@@ -120,7 +130,6 @@ export class Tree<
 		for (const v of this) c++;
 		return c;
 	}
-
 	/**
 	 * Calls a function on each element of the Tree, in order.
 	 * There is an optional index
@@ -192,7 +201,7 @@ export class Tree<
 	toString(): string {
 		let acc = '';
 		for (const node of this.nodes()) {
-			acc += node.toString() + '\n';
+			acc += '-'.repeat((node.h - 1) * 7) + node.toString() + '\n';
 		}
 		return acc;
 	}
