@@ -66,8 +66,8 @@
 		],
 		"exclude": [
 			"node_modules/",
-			"src/**/*.spec.ts",
-			"src/test/model/"
+			"test/**/*.spec.ts",
+			"test/model/"
 		],
 		"reporter": [
 			"lcov"
