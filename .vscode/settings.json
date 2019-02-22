@@ -30,7 +30,7 @@
 	},
 	"typescript.tsdk": "node_modules\\typescript\\lib",
 	"mochaExplorer.optsFile": "./mocha.opts",
-	"mochaExplorer.files": "src/**/*.spec.ts",
+	"mochaExplorer.files": "test/**/*.spec.ts",
 	"mochaExplorer.mochaPath": "node_modules/mocha",
 	"editor.codeActionsOnSave": {
 		"source.fixAll": true
