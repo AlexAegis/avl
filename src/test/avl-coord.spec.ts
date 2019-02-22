@@ -21,7 +21,7 @@ describe('Comparable tests', () => {
 		expect(tree.push.bind(tree, new Basic(2))).to.throw(ConvertError);
 	});
 
-	it('should be in order', () => {
+	it('should be in reading order', () => {
 		let i = 1;
 		for (const n of tree) {
 			expect(n.n).to.equal(i);

@@ -141,9 +141,9 @@ export class Tree<
 
 		if (typeof v === 'number' || typeof v === 'string') k = v as K;
 
-		if (!k && (v as Convertable<K>).convertTo) k = (v as Convertable<K>).convertTo();
+		if (k === undefined && (v as Convertable<K>).convertTo) k = (v as Convertable<K>).convertTo();
 
-		if (!k && this.converter) k = this.converter.bind(v)(v);
+		if (k === undefined && this.converter) k = this.converter.bind(v)(v);
 
 		if (k !== undefined) return k;
 
