@@ -24,10 +24,22 @@ export class Node<
 	 * Generator function
 	 * that returns all the values of the nodes below and this in an descending order
 	 */
-	public *descend(): IterableIterator<V> {
-		if (this.r) yield* this.r;
+	public *reverse(): IterableIterator<V> {
+		if (this.r) yield* this.r.reverse();
 		if (this.k !== undefined) yield this.v;
-		if (this.l) yield* this.l;
+		if (this.l) yield* this.l.reverse();
+	}
+
+	public *nodes(): IterableIterator<Node<V, K>> {
+		if (this.l) yield* this.l.nodes();
+		yield this;
+		if (this.r) yield* this.r.nodes();
+	}
+
+	public *nodesReverse(): IterableIterator<Node<V, K>> {
+		if (this.r) yield* this.r.nodesReverse();
+		yield this;
+		if (this.l) yield* this.l.nodesReverse();
 	}
 
 	public get key(): K {
@@ -211,6 +223,8 @@ export class Node<
 	 * String representation of a node
 	 */
 	public toString(): string {
-		return `l:${this.l ? this.l.k : '-'} {${this.k}} r:${this.r ? this.r.k : '-'}`;
+		return `${'-'.repeat(7 * this.h)} l:${this.l ? this.l.k : '-'} {k: ${this.k}, v: ${this.v}} r:${
+			this.r ? this.r.k : '-'
+		}`;
 	}
 }

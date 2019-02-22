@@ -28,4 +28,12 @@ describe('Comparable tests', () => {
 			i++;
 		}
 	});
+
+	it('should be in reversed reading order when using the reverse generator', () => {
+		let i = 7;
+		for (const n of tree.reverse()) {
+			expect(n.n).to.equal(i);
+			i--;
+		}
+	});
 });

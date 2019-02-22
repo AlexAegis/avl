@@ -162,8 +162,17 @@ export class Tree<
 	/**
 	 * Iterate through the values in descending order
 	 */
-	public *descend(): IterableIterator<V> {
-		if (this.root) yield* this.root.descend();
+	public *reverse(): IterableIterator<V> {
+		if (this.root) yield* this.root.reverse();
+	}
+
+	public print(reversed: boolean = false): void {
+		if (this.root) {
+			const it = reversed ? this.root.nodesReverse() : this.root.nodes();
+			for (const node of it) {
+				console.log(`node: ${node.toString()}`);
+			}
+		}
 	}
 
 	public toArray(): Array<V> {
