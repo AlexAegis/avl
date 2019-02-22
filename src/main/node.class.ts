@@ -154,16 +154,12 @@ export class Node<
 	private rebalance(): Node<V, K> {
 		const lh = this.l ? this.l.h : 0;
 		const rh = this.r ? this.r.h : 0;
-		const llh = (this.l && this.l.l && this.l.l.h) || 0;
-		const lrh = (this.l && this.l.r && this.l.r.h) || 0;
-		const rrh = (this.r && this.r.r && this.r.r.h) || 0;
-		const rlh = (this.r && this.r.l && this.r.l.h) || 0;
 		if (lh > rh + 1) {
-			if (llh > lrh) {
+			if (((this.l && this.l.l && this.l.l.h) || 0) > ((this.l && this.l.r && this.l.r.h) || 0)) {
 				return this.rrotate();
 			} else return this.lrrotate();
 		} else if (rh > lh + 1) {
-			if (rrh > rlh) {
+			if (((this.r && this.r.r && this.r.r.h) || 0) > ((this.r && this.r.l && this.r.l.h) || 0)) {
 				return this.lrotate();
 			} else return this.rlrotate();
 		} else return this;
@@ -215,6 +211,6 @@ export class Node<
 	 * String representation of a node
 	 */
 	public toString(): string {
-		return `L:${this.l ? this.l.k : '-'} {${this.k}} r:${this.r ? this.r.k : '-'}`;
+		return `l:${this.l ? this.l.k : '-'} {${this.k}} r:${this.r ? this.r.k : '-'}`;
 	}
 }
