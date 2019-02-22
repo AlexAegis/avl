@@ -111,7 +111,6 @@ export class Node<
 		comparator: (a: K, b: K) => number,
 		compOwn: boolean
 	): Node<K, V> {
-		// console.log(`comparator.prototype : ${!!comparator.prototype} ownComp: ${compOwn}`);
 		if (
 			comparator
 				? comparator.apply(k, (comparator.prototype ? !compOwn : compOwn) ? [this.k, k] : [k, this.k]) < 0
