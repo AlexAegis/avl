@@ -34,8 +34,8 @@
 	},
 	"scripts": {
 		"build": "tsc",
-		"test": "mocha --opts ./mocha.opts",
-		"test:watch": "mocha --opts ./mocha.opts -W",
+		"test": "mocha --config ./.mocharc",
+		"test:watch": "mocha --config ./.mocharc -W",
 		"test:coverage": "nyc npm test",
 		"lint": "tslint --project .",
 		"typedoc": "typedoc --out ./doc && echo \"\" > ./doc/.nojekyll",
@@ -50,13 +50,13 @@
 		"@types/mocha": "^5.2.6",
 		"@types/node": "^11.9.4",
 		"chai": "^4.2.0",
-		"mocha": "^5.2.0",
+		"mocha": "^6.0.1",
 		"nyc": "^13.3.0",
 		"source-map-support": "^0.5.10",
 		"ts-node": "8.0.2",
 		"tslint": "~5.12.1",
 		"typedoc": "^0.14.2",
-		"typescript": "3.3.3"
+		"typescript": "3.3.3333"
 	},
 	"nyc": {
 		"extension": [

@@ -20,7 +20,8 @@
 		"e2e": "test"
 	},
 	"material-icon-theme.files.associations": {
-		"*.animation.ts": "purescript"
+		"*.animation.ts": "purescript",
+		".mocharc": "mocha"
 	},
 	"workbench.colorCustomizations": {
 		"activityBar.background": "#303030",
@@ -38,5 +39,6 @@
 	"editor.snippetSuggestions": "bottom",
 	"editor.wordBasedSuggestions": true,
 	"typescript.suggest.autoImports": false,
-	"typescript.implementationsCodeLens.enabled": true
+	"typescript.implementationsCodeLens.enabled": true,
+	"files.associations": { ".mocharc": "json" }
 }
