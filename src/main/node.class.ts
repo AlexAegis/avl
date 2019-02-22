@@ -81,62 +81,32 @@ export class Node<
 		return res;
 	}
 
-	remove(k: K, right: boolean, comparator?: (a: K, b: K) => number): void {
+	remove(k: K, comparator?: (a: K, b: K) => number): Node<V, K> {
 		if ((k as Comparable<K>).compareTo) {
 			comparator = (k as Comparable<K>).compareTo;
 		}
 
 		if ((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) < 0 : k < this.k) {
-			if (this.l) this.l.remove(k, false, comparator);
+			if (this.l) this.l = this.l.remove(k, comparator);
 		} else if ((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) > 0 : k > this.k) {
-			if (this.r) this.r.remove(k, true, comparator);
+			if (this.r) this.r = this.r.remove(k, comparator);
 		} else if (
 			this.k !== undefined &&
 			((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) === 0 : this.k === k)
 		) {
-			/*
-			// Delete happens here
-			console.log(`parent: ${this.parent ? this.parent.toString() : 'no'} im: ${k} right? ${right}`);
-			// no child
 			if (!this.l && !this.r) {
-				if (right) {
-					this.parent.r = undefined;
-				} else {
-					this.parent.l = undefined;
-				}
+				return undefined;
+			} else if (this.l ? !this.r : this.r) {
+				return this.l || this.r;
+			} else {
+				const llast = this.l.last();
+				this.v = llast.v;
+				this.k = llast.k;
+				this.l = this.l.remove(llast.k);
 			}
-			// one child
-			if (!this.l && this.r) {
-				if (right) {
-					this.parent.r = this.r;
-				} else {
-					this.parent.l = this.r;
-				}
-			} else if (this.l && !this.r) {
-				if (right) {
-					this.parent.r = this.l;
-				} else {
-					this.parent.l = this.l;
-				}
-			}
-
-			// two child
-			if (this.l && this.r) {
-				if (right) {
-					const next = this.r.last();
-					this.parent.r = next;
-					next.r = this.r;
-					next.l = this.l;
-				} else {
-					const next = this.r.first();
-					this.parent.l = next;
-					next.r = this.r;
-					next.l = this.l;
-				}
-			}
-*/
-			// this.balanceChild();
 		}
+		this.updateHeight();
+		return this.rebalance();
 	}
 
 	/**

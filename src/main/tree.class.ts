@@ -65,19 +65,13 @@ export class Tree<
 		if (this.root) return this.root.search(k, this.comparator);
 	}
 
-	public remove(k: K): V {
+	public remove(k: K): void {
 		if (!(k as Comparable<K>).compareTo && !this.comparator) {
 			k = this.convert(k);
 		}
 		if (this.root) {
-			this.root.remove(k, undefined, this.comparator);
-
-			if (this.root.k === undefined && this.root.v === undefined) {
-				this.root = undefined;
-			}
-			// this.root = this.root.rebalance();
-			return undefined;
-		} else return undefined;
+			this.root = this.root.remove(k, this.comparator);
+		}
 	}
 
 	/**
