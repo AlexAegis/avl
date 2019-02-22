@@ -1,8 +1,9 @@
+import { CompareError } from './compare.error';
 import { Convertable } from './convertable.interface';
 import { Comparable } from './comparable.interface';
 export class Node<
-	V extends number | string | Convertable<K> | any = number | string,
-	K extends number | string | V | Comparable<K> = number | string
+	V extends number | string | Convertable<K> | any = any,
+	K extends number | string | V | Comparable<K> | any = number | string
 > {
 	private l: Node<V, K>;
 	private r: Node<V, K>;
@@ -50,17 +51,19 @@ export class Node<
 	 * Searches for a Node containing a key
 	 */
 	public search(k: K, comparator?: (a: K, b: K) => number): V {
-		if ((k as Comparable<K>).compareTo) {
-			comparator = (k as Comparable<K>).compareTo;
+		if (((k as unknown) as Comparable<K>).compareTo) {
+			comparator = ((k as unknown) as Comparable<K>).compareTo;
+		} else if (typeof k !== 'string' && typeof k !== 'number') {
+			throw new CompareError();
 		}
 		if (
 			this.k !== undefined &&
-			((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) === 0 : this.k === k)
+			(((k as unknown) as Comparable<K>).compareTo ? comparator.bind(k)(this.k) === 0 : this.k === k)
 		) {
 			return this.v as V;
-		} else if ((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) < 0 : k < this.k) {
+		} else if (((k as unknown) as Comparable<K>).compareTo ? comparator.bind(k)(this.k) < 0 : k < this.k) {
 			if (this.l) return this.l.search(k, comparator);
-		} else if ((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) > 0 : k > this.k) {
+		} else if (((k as unknown) as Comparable<K>).compareTo ? comparator.bind(k)(this.k) > 0 : k > this.k) {
 			if (this.r) return this.r.search(k, comparator);
 		}
 	}
@@ -69,18 +72,20 @@ export class Node<
 	 * Sets the key to a specific value. Inserts the node in a key-order respecting manner
 	 */
 	public set(k: K, v: V, reporter: { success: boolean }, comparator?: (a: K, b: K) => number): Node<V, K> {
-		if ((k as Comparable<K>).compareTo) {
-			comparator = (k as Comparable<K>).compareTo;
+		if (((k as unknown) as Comparable<K>).compareTo) {
+			comparator = ((k as unknown) as Comparable<K>).compareTo;
+		} else if (typeof k !== 'string' && typeof k !== 'number') {
+			throw new CompareError();
 		}
-		if ((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) < 0 : k < this.k) {
+		if (((k as unknown) as Comparable<K>).compareTo ? comparator.bind(k)(this.k) < 0 : k < this.k) {
 			if (this.l) this.l = this.l.set(k, v, reporter, comparator);
 			else this.l = new Node<V, K>(k, v);
-		} else if ((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) > 0 : k > this.k) {
+		} else if (((k as unknown) as Comparable<K>).compareTo ? comparator.bind(k)(this.k) > 0 : k > this.k) {
 			if (this.r) this.r = this.r.set(k, v, reporter, comparator);
 			else this.r = new Node<V, K>(k, v);
 		} else if (
 			(this.k === undefined && this.v === undefined) ||
-			((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) === 0 : this.k === k)
+			(((k as unknown) as Comparable<K>).compareTo ? comparator.bind(k)(this.k) === 0 : this.k === k)
 		) {
 			this.k = k;
 			this.v = v;
@@ -92,16 +97,18 @@ export class Node<
 	}
 
 	public remove(k: K, reporter: { removed: V }, comparator?: (a: K, b: K) => number): Node<V, K> {
-		if ((k as Comparable<K>).compareTo) {
-			comparator = (k as Comparable<K>).compareTo;
+		if (((k as unknown) as Comparable<K>).compareTo) {
+			comparator = ((k as unknown) as Comparable<K>).compareTo;
+		} else if (typeof k !== 'string' && typeof k !== 'number') {
+			throw new CompareError();
 		}
-		if ((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) < 0 : k < this.k) {
+		if (((k as unknown) as Comparable<K>).compareTo ? comparator.bind(k)(this.k) < 0 : k < this.k) {
 			if (this.l) this.l = this.l.remove(k, reporter, comparator);
-		} else if ((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) > 0 : k > this.k) {
+		} else if (((k as unknown) as Comparable<K>).compareTo ? comparator.bind(k)(this.k) > 0 : k > this.k) {
 			if (this.r) this.r = this.r.remove(k, reporter, comparator);
 		} else if (
 			this.k !== undefined &&
-			((k as Comparable<K>).compareTo ? comparator.bind(k)(this.k) === 0 : this.k === k)
+			(((k as unknown) as Comparable<K>).compareTo ? comparator.bind(k)(this.k) === 0 : this.k === k)
 		) {
 			reporter.removed = this.v;
 			if (!this.l && !this.r) {

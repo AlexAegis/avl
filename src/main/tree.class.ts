@@ -14,22 +14,15 @@ import { ConvertError } from './convert.error';
  * AVL Tree
  */
 export class Tree<
-	V extends number | string | Convertable<K> | any = number | string,
-	K extends number | string | V | Comparable<K> = number | string
+	V extends number | string | Convertable<K> | any = any,
+	K extends number | string | V | Comparable<K> | any = number | string
 > {
 	private root: Node<V, K>;
 
 	/**
 	 * Creates an instance of AVL. Can set a converter from here.
 	 */
-	public constructor(private converter?: (v: V) => K, private comparator?: (a: K, b: K) => number) {}
-
-	/**
-	 * Returns the current height of the tree
-	 */
-	public get height(): number {
-		return this.root ? this.root.height : 0;
-	}
+	public constructor(private _comparator?: (a: K, b: K) => number, private _converter?: (v: V) => K) {}
 
 	/**
 	 * The push method tries to convert the value into a number to use it as a Key
@@ -39,10 +32,7 @@ export class Tree<
 	public push(...input: V[]): boolean {
 		let res = true;
 		for (const v of input) {
-			const k: K = this.convert(v as K);
-			if (k !== undefined) {
-				res = res && this.set(k as K, v);
-			}
+			res = res && this.set(v as K & V, v);
 		}
 		return res;
 	}
@@ -52,8 +42,8 @@ export class Tree<
 	 * if not, it tries to convert it
 	 */
 	public has(k: K): boolean {
-		if (!(k as Comparable<K>).compareTo && !this.comparator) {
-			k = this.convert(k);
+		if (!((k as unknown) as Comparable<K>).compareTo && !this.comparator) {
+			k = this.convert(k as V & K);
 		}
 		if (this.root) return this.root.search(k, this.comparator) !== undefined;
 	}
@@ -62,15 +52,15 @@ export class Tree<
 	 * Returns with the value on the supplied key. undefined if there is no value on that key
 	 */
 	public get(k: K): V {
-		if (!(k as Comparable<K>).compareTo && !this.comparator) {
-			k = this.convert(k);
+		if (!((k as unknown) as Comparable<K>).compareTo && !this.comparator) {
+			k = this.convert(k as V & K);
 		}
 		if (this.root) return this.root.search(k, this.comparator);
 	}
 
 	public remove(k: K): V {
-		if (!(k as Comparable<K>).compareTo && !this.comparator) {
-			k = this.convert(k);
+		if (!((k as unknown) as Comparable<K>).compareTo && !this.comparator) {
+			k = this.convert(k as V & K);
 		}
 		if (this.root) {
 			const report = { removed: undefined as V };
@@ -83,6 +73,9 @@ export class Tree<
 	 * sets a key to a value
 	 */
 	public set(k: K, v: V): boolean {
+		if (!((k as unknown) as Comparable<K>).compareTo && !this.comparator) {
+			k = this.convert(k as V & K);
+		}
 		if (!this.root) {
 			this.root = new Node<V, K>(k, v);
 			return true;
@@ -96,8 +89,8 @@ export class Tree<
 	/**
 	 * Sets multiple values to multiple keys
 	 */
-	public put(...input: { k: K; v: V }[]): void {
-		for (const { k, v } of input) {
+	public put(...input: { key: K; value: V }[]): void {
+		for (const { key: k, value: v } of input) {
 			this.set(k, v);
 		}
 	}
@@ -143,10 +136,8 @@ export class Tree<
 	 * If you want a permament converter use the opts or just set the converter field of the Tree
 	 * TODO: bigint option if supported
 	 */
-	private convert(v: K | Convertable<K>, converter?: (v: V) => K): K {
+	private convert(v: V & K | Convertable<K>): K {
 		let k: K;
-
-		if (converter) return converter.bind(v)(v);
 
 		if (typeof v === 'number' || typeof v === 'string') k = v as K;
 
@@ -154,7 +145,7 @@ export class Tree<
 
 		if (!k && this.converter) k = this.converter.bind(v)(v);
 
-		if (k !== undefined) return k as K;
+		if (k !== undefined) return k;
 
 		throw new ConvertError();
 	}
@@ -177,5 +168,28 @@ export class Tree<
 		const arr: Array<V> = [];
 		for (const v of this) arr.push(v);
 		return arr;
+	}
+
+	set comparator(comparator: (a: K, b: K) => number) {
+		this._comparator = comparator;
+	}
+
+	get comparator(): (a: K, b: K) => number {
+		return this._comparator;
+	}
+
+	set converter(converter: (v: V) => K) {
+		this._converter = converter;
+	}
+
+	get converter(): (v: V) => K {
+		return this._converter;
+	}
+
+	/**
+	 * Returns the current height of the tree
+	 */
+	public get height(): number {
+		return this.root ? this.root.height : 0;
 	}
 }

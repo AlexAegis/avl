@@ -5,7 +5,9 @@ import { Basic } from './model/basic.class';
 describe('Converter tests', () => {
 	let tree: Tree<Basic>;
 	beforeEach(() => {
-		tree = new Tree<Basic>((basic: Basic) => basic.n);
+		tree = new Tree<Basic>(undefined, function(basic: Basic) {
+			return basic.n;
+		});
 		tree.push(new Basic(1));
 		tree.push(new Basic(2));
 		tree.push(new Basic(3));
