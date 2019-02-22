@@ -8,9 +8,6 @@ import { ConvertError } from './convert.error';
  *
  * For examples check my mocha tests.
  *
- * Comparable might make sense if both the keying and the comparing is done
- *
- * TODO: deletion
  */
 
 /**
