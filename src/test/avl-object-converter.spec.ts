@@ -1,4 +1,3 @@
-import { converter } from './model/converter.function';
 import { expect } from 'chai';
 import { Tree } from '../main/tree.class';
 import { Basic } from './model/basic.class';

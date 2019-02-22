@@ -15,8 +15,7 @@ describe('AVL Number tests', () => {
 	it('should be able to remove a leaf', () => {
 		const lengthBefore = tree.length;
 		expect(tree.remove(0)).to.be.equal(0);
-
-		for (const v of tree.nodes()) console.log(v.toString());
+		expect(tree.remove(10)).to.be.not.ok;
 		expect(tree.length).to.equal(lengthBefore - 1);
 	});
 
@@ -27,12 +26,8 @@ describe('AVL Number tests', () => {
 	});
 
 	it('should be able to remove the root node', () => {
-		for (const v of tree.nodes()) console.log(v.toString());
 		const lengthBefore = tree.length;
 		tree.remove(1);
-		console.log('after dlete');
-		for (const v of tree.nodes()) console.log(v.toString());
-		// expect(tree.remove(1)).to.be.equal(1);
 		expect(tree.length).to.equal(lengthBefore - 1);
 	});
 });

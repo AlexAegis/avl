@@ -1,8 +1,6 @@
 import { BasicConvertable } from './model/basic-convertable.class';
-import { converter } from './model/converter.function';
 import { expect } from 'chai';
 import { Tree } from '../main/tree.class';
-import { Basic } from './model/basic.class';
 
 describe('Bad Converter and Convertable tests, where the interface takes priority', () => {
 	let tree: Tree<BasicConvertable>;
