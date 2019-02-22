@@ -22,13 +22,13 @@ export class Tree<
 	/**
 	 * Creates an instance of AVL. Can set a converter from here.
 	 */
-	constructor(private converter?: (v: V) => K, private comparator?: (a: K, b: K) => number) {}
+	public constructor(private converter?: (v: V) => K, private comparator?: (a: K, b: K) => number) {}
 
 	/**
 	 * Returns the current height of the tree
 	 */
 	public get height(): number {
-		return this.root ? this.root.h : 0;
+		return this.root ? this.root.height : 0;
 	}
 
 	/**
@@ -105,35 +105,21 @@ export class Tree<
 	/**
 	 * Returns the first element.
 	 */
-	min(): V {
-		return this.root ? this.root.first().v : undefined;
+	public min(): V {
+		return this.root ? this.root.first().value : undefined;
 	}
 
 	/**
 	 * Returns the last element.
 	 */
-	max(): V {
-		return this.root ? this.root.last().v : undefined;
-	}
-
-	/**
-	 * Returns and removes the last element.
-	 */
-	pop(): V {
-		return this.remove(this.max().k);
-	}
-
-	/**
-	 * Returns and removes the first element.
-	 */
-	popFirst(): V {
-		return this.remove(this.min().k);
+	public max(): V {
+		return this.root ? this.root.last().value : undefined;
 	}
 
 	/**
 	 * Sums up how many nodes there are in the Tree
 	 */
-	get length(): number {
+	public get length(): number {
 		let c = 0;
 		for (const v of this) c++;
 		return c;
@@ -142,7 +128,7 @@ export class Tree<
 	 * Calls a function on each element of the Tree, in order.
 	 * There is an optional index
 	 */
-	forEach(callback: (i: V, index?: number) => void): void {
+	public forEach(callback: (i: V, index?: number) => void): void {
 		let i = 0;
 		for (const item of this) {
 			callback(item as V, i);
@@ -157,7 +143,7 @@ export class Tree<
 	 * If you want a permament converter use the opts or just set the converter field of the Tree
 	 * TODO: bigint option if supported
 	 */
-	convert(v: K | Convertable<K>, converter?: (v: V) => K): K {
+	private convert(v: K | Convertable<K>, converter?: (v: V) => K): K {
 		let k: K;
 
 		if (converter) return converter.bind(v)(v);
@@ -176,39 +162,20 @@ export class Tree<
 	/**
 	 * Iterate through the values in ascending order
 	 */
-	*[Symbol.iterator](): IterableIterator<V> {
+	public *[Symbol.iterator](): IterableIterator<V> {
 		if (this.root) yield* this.root;
 	}
 
 	/**
 	 * Iterate through the values in descending order
 	 */
-	*descend(): IterableIterator<V> {
+	public *descend(): IterableIterator<V> {
 		if (this.root) yield* this.root.descend();
 	}
 
-	/**
-	 * For debug purposes
-	 */
-	private *nodes(): IterableIterator<Node<V, K>> {
-		if (this.root) yield* this.root.nodes();
-	}
-
-	toArray(): Array<V> {
+	public toArray(): Array<V> {
 		const arr: Array<V> = [];
 		for (const v of this) arr.push(v);
 		return arr;
-	}
-
-	toString(): string {
-		let acc = '';
-		for (const node of this.nodes()) {
-			acc += '-'.repeat((node.h - 1) * 7) + node.toString() + '\n';
-		}
-		return acc;
-	}
-
-	print(): void {
-		console.log(this.toString());
 	}
 }
