@@ -89,10 +89,12 @@ export class Tree<
 	/**
 	 * Sets multiple values to multiple keys
 	 */
-	public put(...input: { key: K; value: V }[]): void {
+	public put(...input: { key: K; value: V }[]): boolean {
+		let result = true;
 		for (const { key: k, value: v } of input) {
-			this.set(k, v);
+			result = result && this.set(k, v);
 		}
+		return result;
 	}
 
 	/**
