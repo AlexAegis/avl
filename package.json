@@ -2,7 +2,7 @@
 	"name": "@alexaegis/avl",
 	"displayName": "AVL.Tree",
 	"description": "Flexible AVL Tree for TypeScript",
-	"version": "0.9.1",
+	"version": "1.0.0",
 	"private": false,
 	"license": "GPL-3.0-or-later",
 	"main": "./dist/index.js",
@@ -67,7 +67,8 @@
 		],
 		"exclude": [
 			"node_modules/",
-			"src/**/*.spec.ts"
+			"src/**/*.spec.ts",
+			"src/test/model/"
 		],
 		"reporter": [
 			"lcov"

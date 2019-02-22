@@ -30,18 +30,6 @@ export class Node<
 		if (this.l) yield* this.l.reverse();
 	}
 
-	public *nodes(): IterableIterator<Node<V, K>> {
-		if (this.l) yield* this.l.nodes();
-		yield this;
-		if (this.r) yield* this.r.nodes();
-	}
-
-	public *nodesReverse(): IterableIterator<Node<V, K>> {
-		if (this.r) yield* this.r.nodesReverse();
-		yield this;
-		if (this.l) yield* this.l.nodesReverse();
-	}
-
 	public get key(): K {
 		return this.k;
 	}
@@ -217,14 +205,5 @@ export class Node<
 		if (this.l) this.l.updateHeight();
 		root.updateHeight();
 		return root;
-	}
-
-	/**
-	 * String representation of a node
-	 */
-	public toString(): string {
-		return `${'-'.repeat(7 * this.h)} l:${this.l ? this.l.k : '-'} {k: ${this.k}, v: ${this.v}} r:${
-			this.r ? this.r.k : '-'
-		}`;
 	}
 }

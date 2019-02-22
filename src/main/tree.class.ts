@@ -178,15 +178,6 @@ export class Tree<
 		if (this.root) yield* this.root.reverse();
 	}
 
-	public print(reversed: boolean = false): void {
-		if (this.root) {
-			const it = reversed ? this.root.nodesReverse() : this.root.nodes();
-			for (const node of it) {
-				console.log(`node: ${node.toString()}`);
-			}
-		}
-	}
-
 	public toArray(): Array<V> {
 		const arr: Array<V> = [];
 		for (const v of this) arr.push(v);
