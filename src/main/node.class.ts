@@ -10,6 +10,26 @@ export class Node<
 	private h = 1;
 	constructor(private k: K, private v: V) {}
 
+	/**
+	 * Generator function
+	 * that returns all the values of the nodes below and this in an ascending order
+	 */
+	public *[Symbol.iterator](): IterableIterator<V> {
+		if (this.l) yield* this.l;
+		if (this.k !== undefined) yield this.v;
+		if (this.r) yield* this.r;
+	}
+
+	/**
+	 * Generator function
+	 * that returns all the values of the nodes below and this in an descending order
+	 */
+	public *descend(): IterableIterator<V> {
+		if (this.r) yield* this.r;
+		if (this.k !== undefined) yield this.v;
+		if (this.l) yield* this.l;
+	}
+
 	public get key(): K {
 		return this.k;
 	}
@@ -49,6 +69,7 @@ export class Node<
 
 	/**
 	 * Searches for a Node containing a key
+	 * @returns the value or undefined if its not found
 	 */
 	public search(k: K, comparator?: (a: K, b: K) => number): V {
 		if (((k as unknown) as Comparable<K>).compareTo) {
@@ -70,13 +91,12 @@ export class Node<
 
 	/**
 	 * Sets the key to a specific value. Inserts the node in a key-order respecting manner
+	 * @returns the new root
 	 */
 	public set(k: K, v: V, reporter: { success: boolean }, comparator?: (a: K, b: K) => number): Node<V, K> {
 		if (((k as unknown) as Comparable<K>).compareTo) {
 			comparator = ((k as unknown) as Comparable<K>).compareTo;
-		} else if (typeof k !== 'string' && typeof k !== 'number') {
-			throw new CompareError();
-		}
+		} else if (typeof k !== 'string' && typeof k !== 'number') throw new CompareError();
 		if (((k as unknown) as Comparable<K>).compareTo ? comparator.bind(k)(this.k) < 0 : k < this.k) {
 			if (this.l) this.l = this.l.set(k, v, reporter, comparator);
 			else this.l = new Node<V, K>(k, v);
@@ -89,19 +109,21 @@ export class Node<
 		) {
 			this.k = k;
 			this.v = v;
-			reporter.success = false;
+			if (reporter) reporter.success = false;
 		}
-		const res = this.rebalance();
 		this.updateHeight();
-		return res;
+		return this.rebalance();
 	}
 
+	/**
+	 * Removes a node from the tree.
+	 * Reports the removed value in the reporter object
+	 * @returns the new root
+	 */
 	public remove(k: K, reporter: { removed: V }, comparator?: (a: K, b: K) => number): Node<V, K> {
 		if (((k as unknown) as Comparable<K>).compareTo) {
 			comparator = ((k as unknown) as Comparable<K>).compareTo;
-		} else if (typeof k !== 'string' && typeof k !== 'number') {
-			throw new CompareError();
-		}
+		} else if (typeof k !== 'string' && typeof k !== 'number') throw new CompareError();
 		if (((k as unknown) as Comparable<K>).compareTo ? comparator.bind(k)(this.k) < 0 : k < this.k) {
 			if (this.l) this.l = this.l.remove(k, reporter, comparator);
 		} else if (((k as unknown) as Comparable<K>).compareTo ? comparator.bind(k)(this.k) > 0 : k > this.k) {
@@ -110,14 +132,13 @@ export class Node<
 			this.k !== undefined &&
 			(((k as unknown) as Comparable<K>).compareTo ? comparator.bind(k)(this.k) === 0 : this.k === k)
 		) {
-			reporter.removed = this.v;
+			if (reporter) reporter.removed = this.v;
 			if (!this.l && !this.r) {
 				return undefined;
 			} else if (this.l ? !this.r : this.r) {
 				return this.l || this.r;
 			} else {
 				const llast = this.l.last();
-
 				this.v = llast.v;
 				this.k = llast.k;
 				this.l = this.l.remove(llast.k, reporter);
@@ -125,26 +146,6 @@ export class Node<
 		}
 		this.updateHeight();
 		return this.rebalance();
-	}
-
-	/**
-	 * Generator function
-	 * that returns all the values of the nodes below and this in an ascending order
-	 */
-	public *[Symbol.iterator](): IterableIterator<V> {
-		if (this.l) yield* this.l;
-		if (this.k !== undefined) yield this.v;
-		if (this.r) yield* this.r;
-	}
-
-	/**
-	 * Generator function
-	 * that returns all the values of the nodes below and this in an descending order
-	 */
-	public *descend(): IterableIterator<V> {
-		if (this.r) yield* this.r;
-		if (this.k !== undefined) yield this.v;
-		if (this.l) yield* this.l;
 	}
 
 	/**
