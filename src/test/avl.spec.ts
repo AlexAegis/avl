@@ -7,13 +7,8 @@ describe('AVL Tree', () => {
 		expect(tree).to.be.ok;
 	});
 
-	it('should be constructable with only value generic', () => {
+	it('should be constructable with only key generic', () => {
 		const tree = new Tree<number>();
-		expect(tree).to.be.ok;
-	});
-
-	it('should be constructable with both key generic', () => {
-		const tree = new Tree<number, number>();
 		expect(tree).to.be.ok;
 	});
 

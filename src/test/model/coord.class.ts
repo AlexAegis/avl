@@ -1,6 +1,6 @@
 import { Comparable } from './../../main/comparable.interface';
 export class Coord implements Comparable<Coord> {
-	constructor(private x: number = 0, private y: number = 0) {}
+	constructor(public x: number = 0, public y: number = 0) {}
 
 	toString(): string {
 		return JSON.stringify(this);

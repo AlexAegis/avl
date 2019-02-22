@@ -4,8 +4,6 @@
 
 Flexible [AVL Tree](./src/main/tree.class.ts) for TypeScript and JavaScript
 
-## Usage
-
 ### Install with NPM
 
 ```bash
@@ -17,12 +15,12 @@ npm i @alexaegis/avl
 ```TypeScript
 import { Tree } from '@alexaegis/avl';
 
-const tree = new Tree<Value, Key>(); // Create
+const tree = new Tree<Key, Value>(); // Create
 tree.set(key, value); // Set
 const result: Value = tree.get(key) // Get
 ```
 
-## Using stricter types
+## Usage
 
 Although the typing does not enforce the key to have a `compareTo` method (to allow using any type of object as keys, not just what you created and have control over) The tree will throw runtime errors if it can't order the keys.
 
@@ -30,7 +28,7 @@ Although the typing does not enforce the key to have a `compareTo` method (to al
 
 > These functions you supply will al have their this value bound to the object the are getting applied on. For this reason if you want to use `this` in you `comparator` and/or `converter` methods use regular functions instead of lambdas.
 
-## Explicit keys - Comparable
+## Explicit keys - Comparable, Convertable
 
 if the object you are using as a key contains a compareTo(T) method then it will work just fine
 
@@ -38,7 +36,7 @@ if the object you are using as a key contains a compareTo(T) method then it will
 class Key {
 	constructor(public key: number) {}
 }
-const tree = new Tree<Value, Key>();
+const tree = new Tree<Key, Value>();
 tree.set(new Key(2), new Value(4)); // Cannot compare error
 ```
 
@@ -51,34 +49,18 @@ class Key implements Comparable<Key> {
 		return this.key - other.key;
 	}
 }
-const tree = new Tree<Value, Key>();
+const tree = new Tree<Key, Value>();
 tree.set(new Key(2), new Value(4)); // 👌 the key will be valid
 ```
 
-### Using a Comparator
+### Using a Convertable
 
-```TypeScript
-class Key {
-	constructor(public key: number) {}
-}
-
-let tree = new Tree<Value, Key>((a: Key, b: Key) => a.key - b.key); // Using Lambdas
-// Because of the inner binding you can even write this. It's basically the same
-tree = new Tree<Value, Key>(function (other: Key) { return this.key - other.key; });
-
-tree.set(new Key(2), new Value(4)); // 👌 the key will be valid
-```
-
-## Implicit keys - Convertable
-
-> Only using implicit keys allows the usage of the push method!
+> Only using Converters/Convertables allows the usage of the push method!
 
 ```TypeScript
 const tree = new Tree<Value>();
 tree.push(new Value(4)); // Cannot convert error
 ```
-
-### Using a convertable
 
 ```TypeScript
 export class Value implements Convertable {
@@ -93,6 +75,27 @@ tree.push(new Value(4)); // 👌 the key will be 4
 
 ```
 
+## Implicit keys - Comparator, Converter
+
+### Using a Comparator
+
+Very important, if using a lambda as a comparator you cant use the `this` keyword in it (as usual),
+and the only type of comparator you can write is the 'two argumen' one as seen below.
+But you can use this if you use a regular anonym function. This will act the same as the one you
+would write while implementing the interface. There is an optional second argument here too, that's gonna be the same as a. But you don't need to use it.
+
+```TypeScript
+class Key {
+	constructor(public key: number) {}
+}
+
+let tree = new Tree<Key, Value>((a: Key, b: Key) => a.key - b.key); // Using Lambdas
+// Because of the fancy inner binding, you can even write this. It's basically the same
+tree = new Tree<Key, Value>(function (b: Key) { return this.key - b.key; });
+
+tree.set(new Key(2), new Value(4)); // 👌 the key will be valid
+```
+
 ### Using a converter
 
 Alternatively you can supply a function to act as the converter
@@ -105,13 +108,13 @@ export class AnotherValue {
     constructor(public n: number) {}
 }
 
-const tree = new Tree<any>(undefined, () => this.n); // you can use this! (The first parameter is the comparator, we leave it as undefined now)
+const tree = new Tree<number, Value>(undefined, (val: Value) => val.n);
 tree.push(new Value(4));
-tree.push(new AnotherValue(1));  // You can do messy things like this without implementing a single interface
+tree.push(new AnotherValue(1)); // You can do messy things like this without implementing a single interface
 
 ```
 
-> For more examples check the [mocha tests](./src/test/)
+For more examples check the [mocha tests](./src/test/)
 
 ---
 

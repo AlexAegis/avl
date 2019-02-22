@@ -2,11 +2,11 @@ import { CompareError } from './compare.error';
 import { Convertable } from './convertable.interface';
 import { Comparable } from './comparable.interface';
 export class Node<
-	V extends number | string | Convertable<K> | any = any,
-	K extends number | string | V | Comparable<K> | any = number | string
+	K extends number | string | V | Comparable<K> | any = number | string,
+	V extends number | string | Convertable<K> | any = any
 > {
-	private l: Node<V, K>;
-	private r: Node<V, K>;
+	private l: Node<K, V>;
+	private r: Node<K, V>;
 	private h = 1;
 	constructor(private k: K, private v: V) {}
 
@@ -30,6 +30,12 @@ export class Node<
 		if (this.l) yield* this.l.reverse();
 	}
 
+	public *nodes(): IterableIterator<Node<K, V>> {
+		if (this.l) yield* this.l.nodes();
+		yield this;
+		if (this.r) yield* this.r.nodes();
+	}
+
 	public get key(): K {
 		return this.k;
 	}
@@ -46,7 +52,7 @@ export class Node<
 	 * Returns the first element.
 	 * Complexity: O(1)
 	 */
-	public first(): Node<V, K> {
+	public first(): Node<K, V> {
 		if (this.l) return this.l.first();
 		else return this;
 	}
@@ -55,7 +61,7 @@ export class Node<
 	 * Returns the last element.
 	 * Complexity: O(1)
 	 */
-	public last(): Node<V, K> {
+	public last(): Node<K, V> {
 		if (this.r) return this.r.last();
 		else return this;
 	}
@@ -71,21 +77,26 @@ export class Node<
 	 * Searches for a Node containing a key
 	 * @returns the value or undefined if its not found
 	 */
-	public search(k: K, comparator?: (a: K, b: K) => number): V {
-		if (((k as unknown) as Comparable<K>).compareTo) {
-			comparator = ((k as unknown) as Comparable<K>).compareTo;
-		} else if (typeof k !== 'string' && typeof k !== 'number') {
-			throw new CompareError();
-		}
+	public search(k: K, comparator: (a: K, b: K) => number, compOwn: boolean): V {
 		if (
+			((k as unknown) as Comparable<K>).compareTo
+				? comparator.apply(k, (comparator.prototype ? !compOwn : compOwn) ? [this.k, k] : [k, this.k]) < 0
+				: k < this.k
+		) {
+			if (this.l) return this.l.search(k, comparator, compOwn);
+		} else if (
+			((k as unknown) as Comparable<K>).compareTo
+				? comparator.apply(k, (comparator.prototype ? !compOwn : compOwn) ? [this.k, k] : [k, this.k]) > 0
+				: k > this.k
+		) {
+			if (this.r) return this.r.search(k, comparator, compOwn);
+		} else if (
 			this.k !== undefined &&
-			(((k as unknown) as Comparable<K>).compareTo ? comparator.bind(k)(this.k) === 0 : this.k === k)
+			(((k as unknown) as Comparable<K>).compareTo
+				? comparator.apply(k, (comparator.prototype ? !compOwn : compOwn) ? [this.k, k] : [k, this.k]) === 0
+				: this.k === k)
 		) {
 			return this.v as V;
-		} else if (((k as unknown) as Comparable<K>).compareTo ? comparator.bind(k)(this.k) < 0 : k < this.k) {
-			if (this.l) return this.l.search(k, comparator);
-		} else if (((k as unknown) as Comparable<K>).compareTo ? comparator.bind(k)(this.k) > 0 : k > this.k) {
-			if (this.r) return this.r.search(k, comparator);
 		}
 	}
 
@@ -93,19 +104,33 @@ export class Node<
 	 * Sets the key to a specific value. Inserts the node in a key-order respecting manner
 	 * @returns the new root
 	 */
-	public set(k: K, v: V, reporter: { success: boolean }, comparator?: (a: K, b: K) => number): Node<V, K> {
-		if (((k as unknown) as Comparable<K>).compareTo) {
-			comparator = ((k as unknown) as Comparable<K>).compareTo;
-		} else if (typeof k !== 'string' && typeof k !== 'number') throw new CompareError();
-		if (((k as unknown) as Comparable<K>).compareTo ? comparator.bind(k)(this.k) < 0 : k < this.k) {
-			if (this.l) this.l = this.l.set(k, v, reporter, comparator);
-			else this.l = new Node<V, K>(k, v);
-		} else if (((k as unknown) as Comparable<K>).compareTo ? comparator.bind(k)(this.k) > 0 : k > this.k) {
-			if (this.r) this.r = this.r.set(k, v, reporter, comparator);
-			else this.r = new Node<V, K>(k, v);
+	public set(
+		k: K,
+		v: V,
+		reporter: { success: boolean },
+		comparator: (a: K, b: K) => number,
+		compOwn: boolean
+	): Node<K, V> {
+		// console.log(`comparator.prototype : ${!!comparator.prototype} ownComp: ${compOwn}`);
+		if (
+			comparator
+				? comparator.apply(k, (comparator.prototype ? !compOwn : compOwn) ? [this.k, k] : [k, this.k]) < 0
+				: k < this.k
+		) {
+			if (this.l) this.l = this.l.set(k, v, reporter, comparator, compOwn);
+			else this.l = new Node<K, V>(k, v);
+		} else if (
+			comparator
+				? comparator.apply(k, (comparator.prototype ? !compOwn : compOwn) ? [this.k, k] : [k, this.k]) > 0
+				: k > this.k
+		) {
+			if (this.r) this.r = this.r.set(k, v, reporter, comparator, compOwn);
+			else this.r = new Node<K, V>(k, v);
 		} else if (
 			(this.k === undefined && this.v === undefined) ||
-			(((k as unknown) as Comparable<K>).compareTo ? comparator.bind(k)(this.k) === 0 : this.k === k)
+			(comparator
+				? comparator.apply(k, (comparator.prototype ? !compOwn : compOwn) ? [this.k, k] : [k, this.k]) === 0
+				: this.k === k)
 		) {
 			this.k = k;
 			this.v = v;
@@ -120,17 +145,24 @@ export class Node<
 	 * Reports the removed value in the reporter object
 	 * @returns the new root
 	 */
-	public remove(k: K, reporter?: { removed: V }, comparator?: (a: K, b: K) => number): Node<V, K> {
-		if (((k as unknown) as Comparable<K>).compareTo) {
-			comparator = ((k as unknown) as Comparable<K>).compareTo;
-		} else if (typeof k !== 'string' && typeof k !== 'number') throw new CompareError();
-		if (((k as unknown) as Comparable<K>).compareTo ? comparator.bind(k)(this.k) < 0 : k < this.k) {
-			if (this.l) this.l = this.l.remove(k, reporter, comparator);
-		} else if (((k as unknown) as Comparable<K>).compareTo ? comparator.bind(k)(this.k) > 0 : k > this.k) {
-			if (this.r) this.r = this.r.remove(k, reporter, comparator);
+	public remove(k: K, reporter: { removed: V }, comparator: (a: K, b: K) => number, compOwn: boolean): Node<K, V> {
+		if (
+			((k as unknown) as Comparable<K>).compareTo
+				? comparator.apply(k, (comparator.prototype ? !compOwn : compOwn) ? [this.k, k] : [k, this.k]) < 0
+				: k < this.k
+		) {
+			if (this.l) this.l = this.l.remove(k, reporter, comparator, compOwn);
+		} else if (
+			((k as unknown) as Comparable<K>).compareTo
+				? comparator.apply(k, (comparator.prototype ? !compOwn : compOwn) ? [this.k, k] : [k, this.k]) > 0
+				: k > this.k
+		) {
+			if (this.r) this.r = this.r.remove(k, reporter, comparator, compOwn);
 		} else if (
 			this.k !== undefined &&
-			(((k as unknown) as Comparable<K>).compareTo ? comparator.bind(k)(this.k) === 0 : this.k === k)
+			(((k as unknown) as Comparable<K>).compareTo
+				? comparator.apply(k, (comparator.prototype ? !compOwn : compOwn) ? [this.k, k] : [k, this.k]) === 0
+				: this.k === k)
 		) {
 			if (reporter) reporter.removed = this.v;
 			if (!this.l && !this.r) {
@@ -141,7 +173,7 @@ export class Node<
 				const llast = this.l.last();
 				this.v = llast.v;
 				this.k = llast.k;
-				this.l = this.l.remove(llast.k);
+				this.l = this.l.remove(llast.k, undefined, comparator, compOwn);
 			}
 		}
 		this.updateHeight();
@@ -151,7 +183,7 @@ export class Node<
 	/**
 	 * Rebalances the tree below the node if the height differences are too big
 	 */
-	private rebalance(): Node<V, K> {
+	private rebalance(): Node<K, V> {
 		const lh = this.l ? this.l.h : 0;
 		const rh = this.r ? this.r.h : 0;
 		if (lh > rh + 1) {
@@ -168,7 +200,7 @@ export class Node<
 	/**
 	 * Performs a right-left rotation
 	 */
-	private rlrotate(): Node<V, K> {
+	private rlrotate(): Node<K, V> {
 		this.r = this.r.rrotate();
 		return this.lrotate();
 	}
@@ -176,7 +208,7 @@ export class Node<
 	/**
 	 * Performs a left-right rotation
 	 */
-	private lrrotate(): Node<V, K> {
+	private lrrotate(): Node<K, V> {
 		this.l = this.l.lrotate();
 		return this.rrotate();
 	}
@@ -184,8 +216,8 @@ export class Node<
 	/**
 	 * Performs a right rotation on the tree
 	 */
-	private rrotate(): Node<V, K> {
-		const root: Node<V, K> = this.l;
+	private rrotate(): Node<K, V> {
+		const root: Node<K, V> = this.l;
 		this.l = root.r;
 		root.r = this;
 		this.updateHeight();
@@ -197,13 +229,17 @@ export class Node<
 	/**
 	 * Performs a right rotation on the tree
 	 */
-	private lrotate(): Node<V, K> {
-		const root: Node<V, K> = this.r;
+	private lrotate(): Node<K, V> {
+		const root: Node<K, V> = this.r;
 		this.r = root.l;
 		root.l = this;
 		this.updateHeight();
 		if (this.l) this.l.updateHeight();
 		root.updateHeight();
 		return root;
+	}
+
+	public toString(): string {
+		return `l: ${this.l ? this.l.k : '-'} k: ${this.k} r: ${this.r ? this.r.k : '-'}`;
 	}
 }

@@ -3,9 +3,9 @@ import { Tree } from '../main/tree.class';
 import { Basic } from './model/basic.class';
 
 describe('Converter tests', () => {
-	let tree: Tree<Basic>;
+	let tree: Tree<any, Basic>;
 	beforeEach(() => {
-		tree = new Tree<Basic>(undefined, function(basic: Basic) {
+		tree = new Tree<any, Basic>(undefined, function(basic: Basic) {
 			return basic.n;
 		});
 		tree.push(new Basic(1));

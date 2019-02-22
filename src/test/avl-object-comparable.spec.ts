@@ -1,12 +1,11 @@
 import { expect } from 'chai';
 import { Tree } from '../main/tree.class';
 import { BasicComparable } from './model/basic-comparable.class';
-import { Basic } from './model/basic.class';
 
 describe('Comparable tests', () => {
-	let tree: Tree<any, BasicComparable>;
+	let tree: Tree<BasicComparable, number>;
 	beforeEach(() => {
-		tree = new Tree<any, BasicComparable>();
+		tree = new Tree<BasicComparable, number>();
 		tree.set(new BasicComparable(1), 1);
 		tree.set(new BasicComparable(2), 2);
 		tree.set(new BasicComparable(3), 3);
@@ -15,7 +14,7 @@ describe('Comparable tests', () => {
 
 	it('should not be able to insert an already added object to the tree', () => {
 		const lengthBeforeAdd = tree.length;
-		tree.push(new BasicComparable(2));
+		tree.set(new BasicComparable(2), 2);
 		expect(tree.length).to.be.equal(lengthBeforeAdd);
 	});
 

@@ -4,10 +4,10 @@ import { Tree } from '../main/tree.class';
 import { Basic } from './model/basic.class';
 import { ConvertError } from '../main/convert.error';
 
-describe('Comparable tests', () => {
-	let tree: Tree<Basic, Coord>;
+describe('Coord tests', () => {
+	let tree: Tree<Coord, Basic>;
 	beforeEach(() => {
-		tree = new Tree<Basic, Coord>();
+		tree = new Tree<Coord, Basic>();
 		tree.set(new Coord(7, 5), new Basic(7));
 		tree.set(new Coord(4, 1), new Basic(3));
 		tree.set(new Coord(1, 3), new Basic(6));
@@ -15,6 +15,7 @@ describe('Comparable tests', () => {
 		tree.set(new Coord(2, 1), new Basic(2));
 		tree.set(new Coord(1, 1), new Basic(1));
 		tree.set(new Coord(5, 1), new Basic(4));
+		tree.print();
 	});
 
 	it('should not be able to use push when the value is not convertable or primitive and there is no converter', () => {
@@ -22,6 +23,7 @@ describe('Comparable tests', () => {
 	});
 
 	it('should be able to remove an element with no children', () => {
+		tree.print();
 		expect(tree.remove(new Coord(1, 1)).n).to.be.equal(1);
 		expect(tree.length).to.be.equal(6);
 	});

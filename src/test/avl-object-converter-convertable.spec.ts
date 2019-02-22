@@ -3,9 +3,9 @@ import { expect } from 'chai';
 import { Tree } from '../main/tree.class';
 
 describe('Bad Converter and Convertable tests, where the interface takes priority', () => {
-	let tree: Tree<BasicConvertable>;
+	let tree: Tree<any, BasicConvertable>;
 	beforeEach(() => {
-		tree = new Tree<BasicConvertable>(undefined, bc => this.n);
+		tree = new Tree<any, BasicConvertable>(undefined, bc => this.n);
 		tree.push(new BasicConvertable(1));
 		tree.push(new BasicConvertable(2));
 		tree.push(new BasicConvertable(3));
