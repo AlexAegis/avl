@@ -132,7 +132,7 @@ export class Node<
 	 * Reports the removed value in the reporter object
 	 * @returns the new root
 	 */
-	public remove(k: K, reporter: { removed: V }, comparator?: (a: K, b: K) => number): Node<V, K> {
+	public remove(k: K, reporter?: { removed: V }, comparator?: (a: K, b: K) => number): Node<V, K> {
 		if (((k as unknown) as Comparable<K>).compareTo) {
 			comparator = ((k as unknown) as Comparable<K>).compareTo;
 		} else if (typeof k !== 'string' && typeof k !== 'number') throw new CompareError();
@@ -153,7 +153,7 @@ export class Node<
 				const llast = this.l.last();
 				this.v = llast.v;
 				this.k = llast.k;
-				this.l = this.l.remove(llast.k, reporter);
+				this.l = this.l.remove(llast.k);
 			}
 		}
 		this.updateHeight();

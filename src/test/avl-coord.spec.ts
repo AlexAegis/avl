@@ -21,9 +21,41 @@ describe('Comparable tests', () => {
 		expect(tree.push.bind(tree, new Basic(2))).to.throw(ConvertError);
 	});
 
+	it('should be able to remove an element with no children', () => {
+		expect(tree.remove(new Coord(1, 1)).n).to.be.equal(1);
+		expect(tree.length).to.be.equal(6);
+	});
+
+	it('should be able to remove an element with two children', () => {
+		expect(tree.remove(new Coord(1, 3)).n).to.be.equal(6);
+		expect(tree.length).to.be.equal(6);
+	});
+
+	it('should be able to remove an element with one children', () => {
+		expect(tree.remove(new Coord(2, 1)).n).to.be.equal(2);
+		expect(tree.length).to.be.equal(6);
+	});
+
 	it('should be in reading order', () => {
 		let i = 1;
 		for (const n of tree) {
+			expect(n.n).to.equal(i);
+			i++;
+		}
+	});
+
+	it('should stay in reading order even when using the forEach loop', () => {
+		let i = 1;
+		tree.forEach((v, index) => {
+			expect(v.n).to.equal(i);
+			expect(index + 1).to.equal(i);
+			i++;
+		});
+	});
+
+	it('should stay in reading order after converted to an array', () => {
+		let i = 1;
+		for (const n of tree.toArray()) {
 			expect(n.n).to.equal(i);
 			i++;
 		}
@@ -35,5 +67,14 @@ describe('Comparable tests', () => {
 			expect(n.n).to.equal(i);
 			i--;
 		}
+	});
+
+	it('should stay in reversed reading order even when using the forEachReversed loop', () => {
+		let i = 7;
+		tree.forEachReversed((v, index) => {
+			expect(v.n).to.equal(i);
+			expect(7 - index).to.equal(i);
+			i--;
+		});
 	});
 });

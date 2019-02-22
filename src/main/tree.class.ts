@@ -123,9 +123,21 @@ export class Tree<
 	 * Calls a function on each element of the Tree, in order.
 	 * There is an optional index
 	 */
-	public forEach(callback: (i: V, index?: number) => void): void {
+	public forEach(callback: (value: V, index?: number) => void): void {
 		let i = 0;
 		for (const item of this) {
+			callback(item as V, i);
+			i++;
+		}
+	}
+
+	/**
+	 * Calls a function on each element of the Tree, in order.
+	 * There is an optional index
+	 */
+	public forEachReversed(callback: (value: V, index?: number) => void): void {
+		let i = 0;
+		for (const item of this.reverse()) {
 			callback(item as V, i);
 			i++;
 		}
