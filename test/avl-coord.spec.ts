@@ -1,8 +1,8 @@
 import { Coord } from './model/coord.class';
 import { expect } from 'chai';
-import { Tree } from '../main/tree.class';
+import { Tree } from '../src/tree.class';
 import { Basic } from './model/basic.class';
-import { ConvertError } from '../main/convert.error';
+import { ConvertError } from '../src/error/convert.error';
 
 describe('Coord tests', () => {
 	let tree: Tree<Coord, Basic>;

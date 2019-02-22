@@ -8,5 +8,5 @@
 	"slow": 75,
 	"timeout": 2000,
 	"ui": "bdd",
-	"spec": "./src/**/*.spec.ts"
+	"spec": "./test/**/*.spec.ts"
 }

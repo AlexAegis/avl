@@ -1,8 +1,8 @@
-import { Comparable } from './comparable.interface';
+import { Comparable } from './interface/comparable.interface';
 import { Node } from './node.class';
-import { Convertable } from './convertable.interface';
-import { ConvertError } from './convert.error';
-import { CompareError } from './compare.error';
+import { Convertable } from './interface/convertable.interface';
+import { ConvertError } from './error/convert.error';
+import { CompareError } from './error/compare.error';
 
 /**
  * AVL Search Tree

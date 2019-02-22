@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { Tree } from '../main/tree.class';
+import { Tree } from '../src/tree.class';
 
 describe('AVL Tree', () => {
 	it('should be constructable without generics', () => {

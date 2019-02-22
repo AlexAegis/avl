@@ -1,3 +1,3 @@
-export { Tree } from './main/tree.class';
-export { Comparable } from './main/comparable.interface';
-export { Convertable } from './main/convertable.interface';
+export { Tree } from './tree.class';
+export { Comparable } from './interface/comparable.interface';
+export { Convertable } from './interface/convertable.interface';

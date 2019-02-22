@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { Tree } from '../main/tree.class';
+import { Tree } from '../src/tree.class';
 
 describe('AVL Height tests', () => {
 	const minHeight = (n: number) => Math.ceil(Math.log2(n + 1));

@@ -1,4 +1,4 @@
-import { Comparable } from '../../main/comparable.interface';
+import { Comparable } from '../../src/interface/comparable.interface';
 
 export class BasicComparable implements Comparable<BasicComparable> {
 	constructor(public n: number) {}

@@ -1,4 +1,4 @@
-import { Comparable } from './../../main/comparable.interface';
+import { Comparable } from '../../src/interface/comparable.interface';
 export class Coord implements Comparable<Coord> {
 	constructor(public x: number = 0, public y: number = 0) {}
 

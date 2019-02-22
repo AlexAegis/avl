@@ -1,6 +1,6 @@
-import { CompareError } from './compare.error';
-import { Convertable } from './convertable.interface';
-import { Comparable } from './comparable.interface';
+import { Convertable } from './interface/convertable.interface';
+import { Comparable } from './interface/comparable.interface';
+
 export class Node<
 	K extends number | string | V | Comparable<K> | any = number | string,
 	V extends number | string | Convertable<K> | any = any
