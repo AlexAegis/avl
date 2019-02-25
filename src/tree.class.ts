@@ -30,7 +30,7 @@ export class Tree<
 	 * if it has a convertTo method (suggested, but not necessarily by the Convertable interface)
 	 * it will use that. If not, but you've set a converter
 	 */
-	public push(...input: V[]): boolean {
+	public push(...input: Array<V>): boolean {
 		let res = true;
 		for (const v of input) {
 			res = res && this.set(v as K & V, v);
@@ -39,12 +39,27 @@ export class Tree<
 	}
 
 	/**
-	 * Accessing a key would first check if the key is comparable or is there a comparator
-	 * if not, it tries to convert it
+	 * Return true if every key is contained
 	 */
-	public has(key: K): boolean {
-		const fin = this.finalOperators(key);
-		if (this.root) return this.root.search(fin.key, fin.comp, fin.compOwn) !== undefined;
+	public has(...keys: Array<K>): boolean {
+		let result = true;
+		for (const key of keys) {
+			const fin = this.finalOperators(key);
+			if (this.root) result = result && this.root.search(fin.key, fin.comp, fin.compOwn) !== undefined;
+		}
+		return result;
+	}
+
+	/**
+	 * Return true if any of the key is contained
+	 */
+	public any(...keys: Array<K>): boolean {
+		let result = false;
+		for (const key of keys) {
+			const fin = this.finalOperators(key);
+			if (this.root) result = result || this.root.search(fin.key, fin.comp, fin.compOwn) !== undefined;
+		}
+		return result;
 	}
 
 	/**
