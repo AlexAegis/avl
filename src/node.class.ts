@@ -1,14 +1,27 @@
 import { Convertable } from './interface/convertable.interface';
 import { Comparable } from './interface/comparable.interface';
+import { jsonObject, jsonMember } from 'typedjson';
 
+@jsonObject()
 export class Node<
 	K extends number | string | V | Comparable<K> | any = number | string,
 	V extends number | string | Convertable<K> | any = any
 > {
+	@jsonMember({ constructor: Node.prototype.constructor })
 	private l: Node<K, V>;
+	@jsonMember({ constructor: Node.prototype.constructor })
 	private r: Node<K, V>;
+	@jsonMember({ constructor: Number.prototype.constructor })
 	private h = 1;
-	constructor(private k: K, private v: V) {}
+	@jsonMember({ constructor: Object.prototype.constructor })
+	private k: K;
+	@jsonMember({ constructor: Object.prototype.constructor })
+	private v: V;
+
+	constructor(k: K, v: V) {
+		this.k = k;
+		this.v = v;
+	}
 
 	/**
 	 * Generator function
@@ -49,7 +62,7 @@ export class Node<
 	}
 
 	/**
-	 * Returns the first element.
+	 * Returns/ the first element.
 	 * Complexity: O(1)
 	 */
 	public first(): Node<K, V> {
@@ -77,19 +90,29 @@ export class Node<
 	 * Searches for a Node containing a key
 	 * @returns the value or undefined if its not found
 	 */
-	public search(k: K, comparator: (a: K, b: K) => number, compOwn: boolean): V {
+	public search(k: K, comparator: (a: K, b: K) => number, compOwn: boolean, closestAllowed: boolean = false): V {
 		if (
 			((k as unknown) as Comparable<K>).compareTo
 				? comparator.apply(k, (comparator.prototype ? !compOwn : compOwn) ? [this.k, k] : [k, this.k]) < 0
 				: k < this.k
 		) {
-			if (this.l) return this.l.search(k, comparator, compOwn);
+			if (this.l) return this.l.search(k, comparator, compOwn, closestAllowed);
+			else if (closestAllowed) {
+				// TODO: This feature is not stable
+				// if there's nothin on
+				return this.v;
+			}
 		} else if (
 			((k as unknown) as Comparable<K>).compareTo
 				? comparator.apply(k, (comparator.prototype ? !compOwn : compOwn) ? [this.k, k] : [k, this.k]) > 0
 				: k > this.k
 		) {
-			if (this.r) return this.r.search(k, comparator, compOwn);
+			if (this.r) return this.r.search(k, comparator, compOwn, closestAllowed);
+			else if (closestAllowed) {
+				// TODO: This feature is not stable
+				// if there's nothin on
+				return this.v;
+			}
 		} else if (
 			this.k !== undefined &&
 			(((k as unknown) as Comparable<K>).compareTo

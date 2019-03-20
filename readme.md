@@ -28,7 +28,7 @@ Although the typing does not enforce the key to have a `compareTo` method (to al
 
 > These functions you supply will al have their this value bound to the object the are getting applied on. For this reason if you want to use `this` in you `comparator` and/or `converter` methods use regular functions instead of lambdas.
 
-## Explicit keys - Comparable, Convertable
+## Implicit keys - Comparable, Comparator
 
 if the object you are using as a key contains a compareTo(T) method then it will work just fine
 
@@ -53,30 +53,6 @@ const tree = new Tree<Key, Value>();
 tree.set(new Key(2), new Value(4)); // 👌 the key will be valid
 ```
 
-### Using a Convertable
-
-> Only using Converters/Convertables allows the usage of the push method!
-
-```TypeScript
-const tree = new Tree<Value>();
-tree.push(new Value(4)); // Cannot convert error
-```
-
-```TypeScript
-export class Value implements Convertable {
-    constructor(public n: number) {}
-	convertTo(): number | string {
-		return this.n;
-	}
-}
-
-const tree = new Tree<Value>();
-tree.push(new Value(4)); // 👌 the key will be 4
-
-```
-
-## Implicit keys - Comparator, Converter
-
 ### Using a Comparator
 
 Very important, if using a lambda as a comparator you cant use the `this` keyword in it (as usual),
@@ -96,7 +72,31 @@ tree = new Tree<Key, Value>(function (b: Key) { return this.key - b.key; });
 tree.set(new Key(2), new Value(4)); // 👌 the key will be valid
 ```
 
-### Using a converter
+## Explicit keys - Convertable, Converter
+
+### Using a Convertable
+
+> Only using Converters/Convertables allows the usage of the push method! You can even convert to a comparable!
+
+```TypeScript
+const tree = new Tree<Value>();
+tree.push(new Value(4)); // Cannot convert error
+```
+
+```TypeScript
+export class Value implements Convertable {
+    constructor(public n: number) {}
+	convertTo(): number | string {
+		return this.n;
+	}
+}
+
+const tree = new Tree<Value>();
+tree.push(new Value(4)); // 👌 the key will be 4
+
+```
+
+### Using a Converter
 
 Alternatively you can supply a function to act as the converter
 
@@ -111,6 +111,31 @@ export class AnotherValue {
 const tree = new Tree<number, Value>(undefined, (val: Value) => val.n);
 tree.push(new Value(4));
 tree.push(new AnotherValue(1)); // You can do messy things like this without implementing a single interface
+
+```
+
+### Using a Convertable that converts to a Comparable
+
+This is great when you have a bunch of objects you want to quickly access by keys that are encapsulated within the object.
+
+```TypeScript
+export class Coord implements Comparable<Coord> {
+	constructor(public x: number = 0, public y: number = 0) {}
+	compareTo(other: Coord): number {
+		return this.y === other.y ? this.x - other.x : this.y - other.y;
+	}
+}
+
+export class BasicConvertableToComparable implements Convertable<Coord> {
+	constructor(private coord: Coord) {}
+	convertTo(): Coord {
+		return this.coord;
+	}
+}
+
+const tree: Tree<Coord, BasicConvertableToComparable>;
+tree.push(new BasicConvertableToComparable(new Coord(1, 1)));
+tree.get(new Coord(1, 1)); // The BasicConvertableToComparable object you pushed in
 
 ```
 

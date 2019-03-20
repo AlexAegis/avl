@@ -3,6 +3,7 @@ import { Node } from './node.class';
 import { Convertable } from './interface/convertable.interface';
 import { ConvertError } from './error/convert.error';
 import { CompareError } from './error/compare.error';
+import { jsonObject, jsonMember, toJson, TypedJSON } from 'typedjson';
 
 /**
  * AVL Search Tree
@@ -14,16 +15,80 @@ import { CompareError } from './error/compare.error';
 /**
  * AVL Tree
  */
+@jsonObject()
+@toJson
 export class Tree<
 	K extends number | string | V | Comparable<K> | any = number | string,
 	V extends number | string | Convertable<K> | any = any
 > {
+	@jsonMember({ constructor: Node.prototype.constructor })
 	private root: Node<K, V>;
 
 	/**
 	 * Creates an instance of AVL. Can set a converter from here.
 	 */
 	public constructor(private _comparator?: (a: K, b: K) => number, private _converter?: (value: V) => K) {}
+
+	/**
+	 * Sums up how many nodes there are in the Tree
+	 */
+	public get length(): number {
+		let c = 0;
+		for (const v of this) c++;
+		return c;
+	}
+
+	set comparator(comparator: (a: K, b: K) => number) {
+		this._comparator = comparator;
+	}
+
+	get comparator(): (a: K, b: K) => number {
+		return this._comparator;
+	}
+
+	set converter(converter: (value: V) => K) {
+		this._converter = converter;
+	}
+
+	get converter(): (value: V) => K {
+		return this._converter;
+	}
+
+	/**
+	 * Returns the current height of the tree
+	 */
+	public get height(): number {
+		return this.root ? this.root.height : 0;
+	}
+
+	/**
+	 * ! WARNING: Limited capabilities!
+	 * ! The converted tree must use Objects (Not Numbers, not Strings, Objects)
+	 * ! on both the key and value to be working
+	 * ! (Workaround: use wrapper objects)
+	 * ! It also can't restore the explicit converter and comparator functions
+	 * ! as JavaScript can't parse functions (reliably)
+	 * ! (Workaround: use implicit converters and comparables)
+	 *
+	 * * The first limitation I believe can be improved with the Reflection-metadata API
+	 * * which is included in this project but not used as I couldn't make TypedJSON work
+	 * * with that. Feel free to contact me if you know a solution on supplying the constructor
+	 * * reference dynamically while the tree is building so it can be used when stringifying
+	 */
+	public static parse<
+		K extends number | string | V | Comparable<K> | any = number | string,
+		V extends number | string | Convertable<K> | any = any
+	>(tree: string): Tree<K, V> {
+		return TypedJSON.parse<Tree<K, V>>(tree, Tree);
+	}
+
+	/**
+	 * Because it's marked with @ToJSon we can sumply use JSON.stringify.
+	 * I'm putting this method here for brevity
+	 */
+	public stringify(): string {
+		return JSON.stringify(this);
+	}
 
 	/**
 	 * The push method tries to convert the value into a number to use it as a Key
@@ -68,6 +133,14 @@ export class Tree<
 	public get(key: K): V {
 		const fin = this.finalOperators(key);
 		if (this.root) return this.root.search(fin.key, fin.comp, fin.compOwn);
+	}
+
+	/**
+	 * Returns the first value it founds on key or after that
+	 */
+	public getFirstFrom(key: K): V {
+		const fin = this.finalOperators(key);
+		if (this.root) return this.root.search(fin.key, fin.comp, fin.compOwn, true);
 	}
 
 	public remove(key: K): V {
@@ -164,15 +237,6 @@ export class Tree<
 	public max(): V {
 		return this.root ? this.root.last().value : undefined;
 	}
-
-	/**
-	 * Sums up how many nodes there are in the Tree
-	 */
-	public get length(): number {
-		let c = 0;
-		for (const v of this) c++;
-		return c;
-	}
 	/**
 	 * Calls a function on each element of the Tree, in order.
 	 * There is an optional index
@@ -215,29 +279,6 @@ export class Tree<
 		const arr: Array<V> = [];
 		for (const v of this) arr.push(v);
 		return arr;
-	}
-
-	set comparator(comparator: (a: K, b: K) => number) {
-		this._comparator = comparator;
-	}
-
-	get comparator(): (a: K, b: K) => number {
-		return this._comparator;
-	}
-
-	set converter(converter: (value: V) => K) {
-		this._converter = converter;
-	}
-
-	get converter(): (value: V) => K {
-		return this._converter;
-	}
-
-	/**
-	 * Returns the current height of the tree
-	 */
-	public get height(): number {
-		return this.root ? this.root.height : 0;
 	}
 
 	/**
