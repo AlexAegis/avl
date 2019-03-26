@@ -1,29 +1,22 @@
+import 'reflect-metadata';
 import { Comparable } from './interface/comparable.interface';
 import { Node } from './node.class';
 import { Convertable } from './interface/convertable.interface';
 import { ConvertError } from './error/convert.error';
 import { CompareError } from './error/compare.error';
 import { jsonObject, jsonMember, toJson, TypedJSON } from 'typedjson';
-
-/**
- * AVL Search Tree
- *
- * For examples check my mocha tests.
- *
- */
+import { Constructor } from 'typedjson/js/typedjson/types';
+import { hashOrReturn } from './helper/hash.function';
 
 /**
  * AVL Tree
  */
-@jsonObject()
+@jsonObject
 @toJson
 export class Tree<
 	K extends number | string | V | Comparable<K> | any = number | string,
 	V extends number | string | Convertable<K> | any = any
 > {
-	@jsonMember({ constructor: Node.prototype.constructor })
-	private root: Node<K, V>;
-
 	/**
 	 * Creates an instance of AVL. Can set a converter from here.
 	 */
@@ -60,6 +53,11 @@ export class Tree<
 	public get height(): number {
 		return this.root ? this.root.height : 0;
 	}
+	@jsonMember
+	private root: Node<K, V>;
+
+	difference = Infinity;
+	nearest: Node<K, V>;
 
 	/**
 	 * ! WARNING: Limited capabilities!
@@ -78,8 +76,43 @@ export class Tree<
 	public static parse<
 		K extends number | string | V | Comparable<K> | any = number | string,
 		V extends number | string | Convertable<K> | any = any
-	>(tree: string): Tree<K, V> {
-		return TypedJSON.parse<Tree<K, V>>(tree, Tree);
+	>(tree: string, keyType?: Constructor<K>, valueType?: Constructor<V>): Tree<K, V> {
+		const typeResolver = (sourceObject: any, knownTypes: Map<string, Function>) => {
+			if (sourceObject.__type) return knownTypes.get(sourceObject.__type);
+		};
+		return TypedJSON.parse<Tree<K, V>>(tree, Tree, { typeResolver: typeResolver });
+	}
+
+	public enclosingNodes(k: K): { last: Node<K, V>; first: Node<K, V> } {
+		return { last: this.lastNodeFrom(k), first: this.firstNodeFrom(k) };
+	}
+
+	public lastNodeFrom(k: K): Node<K, V> {
+		return this.nearestNodeFrom(k, false);
+	}
+
+	private nearestNodeFrom(k: K, fromRight: boolean): Node<K, V> {
+		if (!this.root) {
+			return;
+		} else {
+			const fin = this.finalOperators(k);
+			this.nearest = this.root;
+			this.difference = ((k as unknown) as Comparable<K>).compareTo
+				? fin.comp.apply(
+						fin.key,
+						(fin.comp.prototype ? !fin.compOwn : fin.compOwn) ? [this.root.k, fin.key] : [k, this.root.k]
+				  )
+				: hashOrReturn(fin.key as any) - hashOrReturn(this.root.k as any);
+			this.root.search(fin.key, fin.comp, fin.compOwn, fromRight, this);
+			return this.nearest;
+		}
+	}
+
+	/**
+	 * Returns the first node it founds on key or after that
+	 */
+	public firstNodeFrom(k: K): Node<K, V> {
+		return this.nearestNodeFrom(k, true);
 	}
 
 	/**
@@ -87,7 +120,10 @@ export class Tree<
 	 * I'm putting this method here for brevity
 	 */
 	public stringify(): string {
-		return JSON.stringify(this);
+		const typeResolver = (sourceObject: any, knownTypes: Map<string, Function>) => {
+			if (sourceObject.__type) return knownTypes.get(sourceObject.__type);
+		};
+		return TypedJSON.stringify<Tree<K, V>>(this, Tree, { typeResolver: typeResolver });
 	}
 
 	/**
@@ -132,15 +168,8 @@ export class Tree<
 	 */
 	public get(key: K): V {
 		const fin = this.finalOperators(key);
-		if (this.root) return this.root.search(fin.key, fin.comp, fin.compOwn);
-	}
-
-	/**
-	 * Returns the first value it founds on key or after that
-	 */
-	public getFirstFrom(key: K): V {
-		const fin = this.finalOperators(key);
-		if (this.root) return this.root.search(fin.key, fin.comp, fin.compOwn, true);
+		const node = this.root.search(fin.key, fin.comp, fin.compOwn);
+		if (this.root) return node ? node.v : undefined;
 	}
 
 	public remove(key: K): V {

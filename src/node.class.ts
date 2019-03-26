@@ -1,24 +1,26 @@
 import { Convertable } from './interface/convertable.interface';
 import { Comparable } from './interface/comparable.interface';
 import { jsonObject, jsonMember } from 'typedjson';
+import { Tree } from './tree.class';
+import { hashOrReturn } from './helper/hash.function';
 
-@jsonObject()
+@jsonObject
 export class Node<
 	K extends number | string | V | Comparable<K> | any = number | string,
 	V extends number | string | Convertable<K> | any = any
 > {
-	@jsonMember({ constructor: Node.prototype.constructor })
+	@jsonMember
 	private l: Node<K, V>;
-	@jsonMember({ constructor: Node.prototype.constructor })
+	@jsonMember
 	private r: Node<K, V>;
-	@jsonMember({ constructor: Number.prototype.constructor })
+	@jsonMember({ constructor: Number })
 	private h = 1;
-	@jsonMember({ constructor: Object.prototype.constructor })
-	private k: K;
-	@jsonMember({ constructor: Object.prototype.constructor })
-	private v: V;
+	@jsonMember({ serializer: (a: K) => JSON.stringify(a) /*, deserializer: (a: string) => JSON.parse(a) */ })
+	public k: K;
+	@jsonMember({ serializer: (a: V) => JSON.stringify(a) /*, deserializer: (a: string) => JSON.parse(a) */ })
+	public v: V;
 
-	constructor(k: K, v: V) {
+	constructor(k?: K, v?: V) {
 		this.k = k;
 		this.v = v;
 	}
@@ -85,41 +87,51 @@ export class Node<
 	private updateHeight(): void {
 		this.h = 1 + Math.max(this.l ? this.l.h : 0, this.r ? this.r.h : 0);
 	}
-
 	/**
 	 * Searches for a Node containing a key
 	 * @returns the value or undefined if its not found
 	 */
-	public search(k: K, comparator: (a: K, b: K) => number, compOwn: boolean, closestAllowed: boolean = false): V {
+	public search(
+		k: K,
+		comparator: (a: K, b: K) => number,
+		compOwn: boolean,
+		nearestRight?: boolean, // on true: right, on false: left, undefined: whatever.
+		treeRefForNearestSearch?: Tree<K, V> // Only used when searching for nearest values as it contains temporary fields.
+	): Node<K, V> {
+		// When searching for nearest values, simply track each value we are traversing while searching as we always touch them on traversal
+		if (treeRefForNearestSearch) {
+			// If its a comparable use the returned value from that, else, substract the keys
+			const difference = ((k as unknown) as Comparable<K>).compareTo
+				? comparator.apply(k, (comparator.prototype ? !compOwn : compOwn) ? [this.k, k] : [k, this.k])
+				: hashOrReturn(k as any) - hashOrReturn(this.k as any);
+			if (
+				((!nearestRight && difference >= 0) || (nearestRight && difference <= 0)) &&
+				Math.abs(treeRefForNearestSearch.difference) >= Math.abs(difference)
+			) {
+				treeRefForNearestSearch.nearest = this;
+				treeRefForNearestSearch.difference = difference;
+			}
+		}
+
 		if (
 			((k as unknown) as Comparable<K>).compareTo
 				? comparator.apply(k, (comparator.prototype ? !compOwn : compOwn) ? [this.k, k] : [k, this.k]) < 0
 				: k < this.k
 		) {
-			if (this.l) return this.l.search(k, comparator, compOwn, closestAllowed);
-			else if (closestAllowed) {
-				// TODO: This feature is not stable
-				// if there's nothin on
-				return this.v;
-			}
+			if (this.l) return this.l.search(k, comparator, compOwn, nearestRight, treeRefForNearestSearch);
 		} else if (
 			((k as unknown) as Comparable<K>).compareTo
 				? comparator.apply(k, (comparator.prototype ? !compOwn : compOwn) ? [this.k, k] : [k, this.k]) > 0
 				: k > this.k
 		) {
-			if (this.r) return this.r.search(k, comparator, compOwn, closestAllowed);
-			else if (closestAllowed) {
-				// TODO: This feature is not stable
-				// if there's nothin on
-				return this.v;
-			}
+			if (this.r) return this.r.search(k, comparator, compOwn, nearestRight, treeRefForNearestSearch);
 		} else if (
 			this.k !== undefined &&
 			(((k as unknown) as Comparable<K>).compareTo
 				? comparator.apply(k, (comparator.prototype ? !compOwn : compOwn) ? [this.k, k] : [k, this.k]) === 0
 				: this.k === k)
 		) {
-			return this.v as V;
+			return this;
 		}
 	}
 

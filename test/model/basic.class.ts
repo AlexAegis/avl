@@ -1,3 +1,4 @@
+
 export class Basic {
 	constructor(public n: number) {}
 
