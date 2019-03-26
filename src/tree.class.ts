@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import { Enclosing } from './type/enclosing.type';
 import { Comparable } from './interface/comparable.interface';
 import { Node } from './node.class';
 import { Convertable } from './interface/convertable.interface';
@@ -83,11 +84,11 @@ export class Tree<
 		return TypedJSON.parse<Tree<K, V>>(tree, Tree, { typeResolver: typeResolver });
 	}
 
-	public enclosing(k: K): { last: V; first: V } {
+	public enclosing(k: K): Enclosing<V> {
 		return { last: this.lastBefore(k), first: this.firstFrom(k) };
 	}
 
-	public enclosingNodes(k: K): { last: Node<K, V>; first: Node<K, V> } {
+	public enclosingNodes(k: K): Enclosing<Node<K, V>> {
 		return { last: this.lastNodeBefore(k), first: this.firstNodeFrom(k) };
 	}
 
