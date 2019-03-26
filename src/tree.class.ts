@@ -83,12 +83,36 @@ export class Tree<
 		return TypedJSON.parse<Tree<K, V>>(tree, Tree, { typeResolver: typeResolver });
 	}
 
-	public enclosingNodes(k: K): { last: Node<K, V>; first: Node<K, V> } {
-		return { last: this.lastNodeFrom(k), first: this.firstNodeFrom(k) };
+	public enclosing(k: K): { last: V; first: V } {
+		return { last: this.lastBefore(k), first: this.firstFrom(k) };
 	}
 
-	public lastNodeFrom(k: K): Node<K, V> {
+	public enclosingNodes(k: K): { last: Node<K, V>; first: Node<K, V> } {
+		return { last: this.lastNodeBefore(k), first: this.firstNodeFrom(k) };
+	}
+
+	public lastBefore(k: K): V {
+		const near = this.nearestNodeFrom(k, false);
+		return near ? near.v : undefined;
+	}
+
+	public lastNodeBefore(k: K): Node<K, V> {
 		return this.nearestNodeFrom(k, false);
+	}
+
+	/**
+	 * Returns the first value it founds on key or after that
+	 */
+	public firstFrom(k: K): V {
+		const near = this.nearestNodeFrom(k, true);
+		return near ? near.v : undefined;
+	}
+
+	/**
+	 * Returns the first node it founds on key or after that
+	 */
+	public firstNodeFrom(k: K): Node<K, V> {
+		return this.nearestNodeFrom(k, true);
 	}
 
 	private nearestNodeFrom(k: K, fromRight: boolean): Node<K, V> {
@@ -101,18 +125,12 @@ export class Tree<
 				? fin.comp.apply(
 						fin.key,
 						(fin.comp.prototype ? !fin.compOwn : fin.compOwn) ? [this.root.k, fin.key] : [k, this.root.k]
+						// tslint:disable-next-line: indent
 				  )
 				: hashOrReturn(fin.key as any) - hashOrReturn(this.root.k as any);
 			this.root.search(fin.key, fin.comp, fin.compOwn, fromRight, this);
 			return this.nearest;
 		}
-	}
-
-	/**
-	 * Returns the first node it founds on key or after that
-	 */
-	public firstNodeFrom(k: K): Node<K, V> {
-		return this.nearestNodeFrom(k, true);
 	}
 
 	/**
