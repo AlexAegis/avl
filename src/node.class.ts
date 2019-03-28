@@ -31,9 +31,9 @@ export class Node<
 	private r: Node<K, V>;
 	@jsonMember({ constructor: Number })
 	private h = 1;
-	@jsonMember({ serializer: (a: K) => JSON.stringify(a), deserializer: (a: string) => JSON.parse(a) })
+	@jsonMember
 	public k: K;
-	@jsonMember // ({ serializer: (a: V) => JSON.stringify(a), deserializer: (a: string) => JSON.parse(a) })
+	@jsonMember
 	public v: V;
 
 	/**

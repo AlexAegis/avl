@@ -14,7 +14,7 @@ const treeAsString = JSON.stringify(tree);
 
 console.log(treeAsString);
 
-const redone = Tree.parse<number, Basic>(treeAsString, undefined, Basic);
+const redone = Tree.parse<Number, Basic>(treeAsString, Number, Basic);
 
 console.log(redone);
 for (const val of redone) {
