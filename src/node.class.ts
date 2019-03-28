@@ -41,8 +41,8 @@ export class Node<
 	 */
 	public invert(): void {
 		if (this.l) this.l.invert();
-		[this.r, this.l] = [this.l, this.r];
 		if (this.r) this.r.invert();
+		[this.r, this.l] = [this.l, this.r];
 	}
 
 	/**
