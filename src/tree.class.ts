@@ -73,15 +73,28 @@ export class Tree<
 	 * * which is included in this project but not used as I couldn't make TypedJSON work
 	 * * with that. Feel free to contact me if you know a solution on supplying the constructor
 	 * * reference dynamically while the tree is building so it can be used when stringifying
+	 *
+	 * Bit tricky to use. You have to supply the constructor of the key and the value. If it's a primitive
+	 * you can just leave it undefined
+	 * example:
+	 *
+	 * ```typescript
+	 * const tree = Tree.parse<number, Basic>(treeAsString, undefined, Basic);
+	 * ```
+	 * If those subtypes are also generic (and annotated by TypedJSON) you can add extra knownTypes after the initial two too.
 	 */
 	public static parse<
 		K extends number | string | V | Comparable<K> | any = number | string,
 		V extends number | string | Convertable<K> | any = any
-	>(tree: string, keyType?: Constructor<K>, valueType?: Constructor<V>): Tree<K, V> {
-		const typeResolver = (sourceObject: any, knownTypes: Map<string, Function>) => {
-			if (sourceObject.__type) return knownTypes.get(sourceObject.__type);
-		};
-		return TypedJSON.parse<Tree<K, V>>(tree, Tree, { typeResolver: typeResolver });
+	>(
+		tree: string,
+		keyType?: Constructor<K>,
+		valueType?: Constructor<V>,
+		...extra: Array<Constructor<any>>
+	): Tree<K, V> {
+		return TypedJSON.parse<Tree<K, V>>(tree, Tree, {
+			knownTypes: [Number, String, keyType, valueType, ...extra].filter(val => val !== undefined)
+		});
 	}
 
 	/**
