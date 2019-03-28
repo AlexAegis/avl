@@ -84,6 +84,13 @@ export class Tree<
 		return TypedJSON.parse<Tree<K, V>>(tree, Tree, { typeResolver: typeResolver });
 	}
 
+	/**
+	 * Please don't use this for the love of god
+	 */
+	public invert(): void {
+		if (this.root) this.root.invert();
+	}
+
 	public enclosing(k: K): Enclosing<V> {
 		return { last: this.lastBefore(k), first: this.firstFrom(k) };
 	}

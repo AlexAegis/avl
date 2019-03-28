@@ -9,6 +9,22 @@ export class Node<
 	K extends number | string | V | Comparable<K> | any = number | string,
 	V extends number | string | Convertable<K> | any = any
 > {
+	constructor(k?: K, v?: V) {
+		this.k = k;
+		this.v = v;
+	}
+
+	public get key(): K {
+		return this.k;
+	}
+
+	public get value(): V {
+		return this.v;
+	}
+
+	public get height(): number {
+		return this.h;
+	}
 	@jsonMember
 	private l: Node<K, V>;
 	@jsonMember
@@ -20,9 +36,13 @@ export class Node<
 	@jsonMember({ serializer: (a: V) => JSON.stringify(a) /*, deserializer: (a: string) => JSON.parse(a) */ })
 	public v: V;
 
-	constructor(k?: K, v?: V) {
-		this.k = k;
-		this.v = v;
+	/**
+	 * Inspired by @mxcl 's [tweet](https://twitter.com/mxcl/status/608682016205344768)
+	 */
+	public invert(): void {
+		if (this.l) this.l.invert();
+		[this.r, this.l] = [this.l, this.r];
+		if (this.r) this.r.invert();
 	}
 
 	/**
@@ -49,18 +69,6 @@ export class Node<
 		if (this.l) yield* this.l.nodes();
 		yield this;
 		if (this.r) yield* this.r.nodes();
-	}
-
-	public get key(): K {
-		return this.k;
-	}
-
-	public get value(): V {
-		return this.v;
-	}
-
-	public get height(): number {
-		return this.h;
 	}
 
 	/**
