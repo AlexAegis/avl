@@ -142,14 +142,10 @@ export class Tree<
 		} else {
 			const fin = this.finalOperators(k);
 			this.nearest = this.root;
-			this.difference = ((k as unknown) as Comparable<K>).compareTo
-				? fin.comp.apply(
-						fin.key,
-						(fin.comp.prototype ? !fin.compOwn : fin.compOwn) ? [this.root.k, fin.key] : [k, this.root.k]
-						// tslint:disable-next-line: indent
-				  )
+			this.difference = fin.comp
+				? fin.comp.apply(fin.comp.length === 1 ? [this.root.k, fin.key] : [k, this.root.k])
 				: hashOrReturn(fin.key as any) - hashOrReturn(this.root.k as any);
-			this.root.search(fin.key, fin.comp, fin.compOwn, fromRight, this);
+			this.root.search(fin.key, fin.comp, fromRight, this);
 			return this.nearest;
 		}
 	}
@@ -185,7 +181,7 @@ export class Tree<
 		let result = true;
 		for (const key of keys) {
 			const fin = this.finalOperators(key);
-			if (this.root) result = result && this.root.search(fin.key, fin.comp, fin.compOwn) !== undefined;
+			if (this.root) result = result && this.root.search(fin.key, fin.comp) !== undefined;
 		}
 		return result;
 	}
@@ -197,7 +193,7 @@ export class Tree<
 		let result = false;
 		for (const key of keys) {
 			const fin = this.finalOperators(key);
-			if (this.root) result = result || this.root.search(fin.key, fin.comp, fin.compOwn) !== undefined;
+			if (this.root) result = result || this.root.search(fin.key, fin.comp) !== undefined;
 		}
 		return result;
 	}
@@ -207,7 +203,7 @@ export class Tree<
 	 */
 	public get(key: K): V {
 		const fin = this.finalOperators(key);
-		const node = this.root.search(fin.key, fin.comp, fin.compOwn);
+		const node = this.root.search(fin.key, fin.comp);
 		if (this.root) return node ? node.v : undefined;
 	}
 
@@ -215,7 +211,7 @@ export class Tree<
 		const fin = this.finalOperators(key);
 		if (this.root) {
 			const report = { removed: undefined as V };
-			this.root = this.root.remove(fin.key, report, fin.comp, fin.compOwn);
+			this.root = this.root.remove(fin.key, report, fin.comp);
 			return report.removed;
 		}
 	}
@@ -230,13 +226,13 @@ export class Tree<
 			return true;
 		} else {
 			const report = { success: true };
-			this.root = this.root.set(fin.key, value, report, fin.comp, fin.compOwn);
+			this.root = this.root.set(fin.key, value, report, fin.comp);
 			return report.success;
 		}
 	}
 
-	private finalOperators(k: K): { key: K; comp: (a: K, b: K) => number; compOwn: boolean } {
-		const result = { key: undefined as K, comp: this.comparator, compOwn: false };
+	private finalOperators(k: K): { key: K; comp: (a: K, b: K) => number } {
+		const result = { key: undefined as K, comp: this.comparator };
 
 		// 1) Explicit comparator
 		result.comp = this.comparator;
@@ -244,7 +240,6 @@ export class Tree<
 		// 2) Implicit comparator
 		if (result.comp === undefined && ((k as unknown) as Comparable<K>).compareTo) {
 			result.comp = ((k as unknown) as Comparable<K>).compareTo;
-			result.compOwn = true;
 		}
 
 		if (!result.comp) {

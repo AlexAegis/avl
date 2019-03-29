@@ -19,7 +19,7 @@ describe('Coord tests', () => {
 	});
 
 	it('should not be able to use push when the value is not convertable or primitive and there is no converter', () => {
-		expect(tree.push.bind(tree, new Basic(2))).to.throw(ConvertError);
+		expect(tree.push.bind(tree, new Basic(2))).to.throw(Error);
 	});
 
 	it('should be able to remove an element with no children', () => {

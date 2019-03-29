@@ -3,15 +3,16 @@
 		"lib": ["es2017", "esnext.asynciterable"],
 		"declaration": true,
 		"module": "commonjs",
-		"target": "es2015",
+		"target": "es5",
 		"noImplicitAny": true,
-		"rootDir": "./src/",
+		"rootDir": "./",
 		"outDir": "./dist/",
+		"downlevelIteration": true,
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
 		"sourceMap": true,
 		"typeRoots": ["./node_modules/@types"]
 	},
-	"include": ["./src/**/*"],
+	"include": ["./src/**/*", "./test/**/*"],
 	"exclude": ["**/node_modules/**/*"]
 }

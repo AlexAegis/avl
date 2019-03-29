@@ -102,15 +102,14 @@ export class Node<
 	public search(
 		k: K,
 		comparator: (a: K, b: K) => number,
-		compOwn: boolean,
 		nearestRight?: boolean, // on true: right, on false: left, undefined: whatever.
 		treeRefForNearestSearch?: Tree<K, V> // Only used when searching for nearest values as it contains temporary fields.
 	): Node<K, V> {
 		// When searching for nearest values, simply track each value we are traversing while searching as we always touch them on traversal
 		if (treeRefForNearestSearch) {
 			// If its a comparable use the returned value from that, else, substract the keys
-			const difference = ((k as unknown) as Comparable<K>).compareTo
-				? comparator.apply(k, (comparator.prototype ? !compOwn : compOwn) ? [this.k, k] : [k, this.k])
+			const difference = comparator
+				? comparator.apply(k, comparator.length === 1 ? [this.k, k] : [k, this.k])
 				: hashOrReturn(k as any) - hashOrReturn(this.k as any);
 			if (
 				((!nearestRight && difference >= 0) || (nearestRight && difference <= 0)) &&
@@ -121,23 +120,15 @@ export class Node<
 			}
 		}
 
-		if (
-			((k as unknown) as Comparable<K>).compareTo
-				? comparator.apply(k, (comparator.prototype ? !compOwn : compOwn) ? [this.k, k] : [k, this.k]) < 0
-				: k < this.k
-		) {
-			if (this.l) return this.l.search(k, comparator, compOwn, nearestRight, treeRefForNearestSearch);
+		if (comparator ? comparator.apply(k, comparator.length === 1 ? [this.k, k] : [k, this.k]) < 0 : k < this.k) {
+			if (this.l) return this.l.search(k, comparator, nearestRight, treeRefForNearestSearch);
 		} else if (
-			((k as unknown) as Comparable<K>).compareTo
-				? comparator.apply(k, (comparator.prototype ? !compOwn : compOwn) ? [this.k, k] : [k, this.k]) > 0
-				: k > this.k
+			comparator ? comparator.apply(k, comparator.length === 1 ? [this.k, k] : [k, this.k]) > 0 : k > this.k
 		) {
-			if (this.r) return this.r.search(k, comparator, compOwn, nearestRight, treeRefForNearestSearch);
+			if (this.r) return this.r.search(k, comparator, nearestRight, treeRefForNearestSearch);
 		} else if (
 			this.k !== undefined &&
-			(((k as unknown) as Comparable<K>).compareTo
-				? comparator.apply(k, (comparator.prototype ? !compOwn : compOwn) ? [this.k, k] : [k, this.k]) === 0
-				: this.k === k)
+			(comparator ? comparator.apply(k, comparator.length === 1 ? [this.k, k] : [k, this.k]) === 0 : this.k === k)
 		) {
 			return this;
 		}
@@ -147,32 +138,18 @@ export class Node<
 	 * Sets the key to a specific value. Inserts the node in a key-order respecting manner
 	 * @returns the new root
 	 */
-	public set(
-		k: K,
-		v: V,
-		reporter: { success: boolean },
-		comparator: (a: K, b: K) => number,
-		compOwn: boolean
-	): Node<K, V> {
-		if (
-			comparator
-				? comparator.apply(k, (comparator.prototype ? !compOwn : compOwn) ? [this.k, k] : [k, this.k]) < 0
-				: k < this.k
-		) {
-			if (this.l) this.l = this.l.set(k, v, reporter, comparator, compOwn);
+	public set(k: K, v: V, reporter: { success: boolean }, comparator: (a: K, b: K) => number): Node<K, V> {
+		if (comparator ? comparator.apply(k, comparator.length === 1 ? [this.k, k] : [k, this.k]) < 0 : k < this.k) {
+			if (this.l) this.l = this.l.set(k, v, reporter, comparator);
 			else this.l = new Node<K, V>(k, v);
 		} else if (
-			comparator
-				? comparator.apply(k, (comparator.prototype ? !compOwn : compOwn) ? [this.k, k] : [k, this.k]) > 0
-				: k > this.k
+			comparator ? comparator.apply(k, comparator.length === 1 ? [this.k, k] : [k, this.k]) > 0 : k > this.k
 		) {
-			if (this.r) this.r = this.r.set(k, v, reporter, comparator, compOwn);
+			if (this.r) this.r = this.r.set(k, v, reporter, comparator);
 			else this.r = new Node<K, V>(k, v);
 		} else if (
 			(this.k === undefined && this.v === undefined) ||
-			(comparator
-				? comparator.apply(k, (comparator.prototype ? !compOwn : compOwn) ? [this.k, k] : [k, this.k]) === 0
-				: this.k === k)
+			(comparator ? comparator.apply(k, comparator.length === 1 ? [this.k, k] : [k, this.k]) === 0 : this.k === k)
 		) {
 			this.k = k;
 			this.v = v;
@@ -187,24 +164,16 @@ export class Node<
 	 * Reports the removed value in the reporter object
 	 * @returns the new root
 	 */
-	public remove(k: K, reporter: { removed: V }, comparator: (a: K, b: K) => number, compOwn: boolean): Node<K, V> {
-		if (
-			((k as unknown) as Comparable<K>).compareTo
-				? comparator.apply(k, (comparator.prototype ? !compOwn : compOwn) ? [this.k, k] : [k, this.k]) < 0
-				: k < this.k
-		) {
-			if (this.l) this.l = this.l.remove(k, reporter, comparator, compOwn);
+	public remove(k: K, reporter: { removed: V }, comparator: (a: K, b: K) => number): Node<K, V> {
+		if (comparator ? comparator.apply(k, comparator.length === 1 ? [this.k, k] : [k, this.k]) < 0 : k < this.k) {
+			if (this.l) this.l = this.l.remove(k, reporter, comparator);
 		} else if (
-			((k as unknown) as Comparable<K>).compareTo
-				? comparator.apply(k, (comparator.prototype ? !compOwn : compOwn) ? [this.k, k] : [k, this.k]) > 0
-				: k > this.k
+			comparator ? comparator.apply(k, comparator.length === 1 ? [this.k, k] : [k, this.k]) > 0 : k > this.k
 		) {
-			if (this.r) this.r = this.r.remove(k, reporter, comparator, compOwn);
+			if (this.r) this.r = this.r.remove(k, reporter, comparator);
 		} else if (
 			this.k !== undefined &&
-			(((k as unknown) as Comparable<K>).compareTo
-				? comparator.apply(k, (comparator.prototype ? !compOwn : compOwn) ? [this.k, k] : [k, this.k]) === 0
-				: this.k === k)
+			(comparator ? comparator.apply(k, comparator.length === 1 ? [this.k, k] : [k, this.k]) === 0 : this.k === k)
 		) {
 			if (reporter) reporter.removed = this.v;
 			if (!this.l && !this.r) {
@@ -215,7 +184,7 @@ export class Node<
 				const llast = this.l.last();
 				this.v = llast.v;
 				this.k = llast.k;
-				this.l = this.l.remove(llast.k, undefined, comparator, compOwn);
+				this.l = this.l.remove(llast.k, undefined, comparator);
 			}
 		}
 		this.updateHeight();

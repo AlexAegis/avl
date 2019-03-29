@@ -1,13 +1,21 @@
+import 'reflect-metadata';
+import { jsonObject, jsonMember } from 'typedjson';
 import { Comparable } from '../../src/interface/comparable.interface';
 
-export class BasicComparable implements Comparable<BasicComparable> {
-	constructor(public n: number) {}
+@jsonObject
+export class BasicComparable {
+	@jsonMember
+	public n: number;
+	public constructor(n?: number) {
+		this.n = n;
+	}
 
-	compareTo(other: BasicComparable): number {
+	public compareTo(other: BasicComparable): number {
+		// console.log(`this.n: ${this.n} other.n: ${other.n}`); // another.n: ${another.n}`);
 		return this.n - other.n;
 	}
 
-	toString(): string {
+	public toString(): string {
 		return `{type: ${typeof this} n: ${this.n}}`;
 	}
 }
