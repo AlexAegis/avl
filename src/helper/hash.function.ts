@@ -4,7 +4,12 @@
  * The numbers can get quite large.
  */
 export function hashString(s: string): number {
-	return [...s].reduce((acc, next, i, array) => (acc += next.charCodeAt(0) * Math.pow(222, array.length - i - 1)), 0);
+	return (
+		s &&
+		[...s]
+			.filter(n => n !== undefined)
+			.reduce((acc, next, i, array) => (acc += next.charCodeAt(0) * Math.pow(222, array.length - i - 1)), 0)
+	);
 }
 
 export function hashOrReturn(s: string | number): number {

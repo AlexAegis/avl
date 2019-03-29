@@ -105,35 +105,30 @@ export class Node<
 		treeRefForNearestSearch?: Tree<K, V> // Only used when searching for nearest values as it contains temporary fields.
 	): Node<K, V> {
 		// When searching for nearest values, simply track each value we are traversing while searching as we always touch them on traversal
+		const comparatorResult: number =
+			comparator && comparator.apply(k, comparator.length === 1 ? [this.k, k] : [k, this.k]);
 		if (treeRefForNearestSearch) {
-			// If its a comparable use the returned value from that, else, substract the keys
-			const difference = comparator
-				? comparator.apply(k, comparator.length === 1 ? [this.k, k] : [k, this.k])
-				: hashOrReturn(k as any) - hashOrReturn(this.k as any);
-
+			const difference =
+				comparatorResult === undefined
+					? hashOrReturn(k as any) - hashOrReturn(this.k as any)
+					: comparatorResult;
 			if (difference >= 0 && Math.abs(treeRefForNearestSearch.differenceFromRight) >= Math.abs(difference)) {
 				treeRefForNearestSearch.nearestFromRight = this;
 				treeRefForNearestSearch.differenceFromRight = difference;
-			}
-
-			if (difference <= 0 && Math.abs(treeRefForNearestSearch.differenceFromLeft) >= Math.abs(difference)) {
+			} else if (
+				difference <= 0 &&
+				Math.abs(treeRefForNearestSearch.differenceFromLeft) >= Math.abs(difference)
+			) {
 				treeRefForNearestSearch.nearestFromLeft = this;
 				treeRefForNearestSearch.differenceFromLeft = difference;
 			}
 		}
 
-		if (comparator ? comparator.apply(k, comparator.length === 1 ? [this.k, k] : [k, this.k]) < 0 : k < this.k) {
+		if (comparatorResult !== undefined ? comparatorResult < 0 : k < this.k) {
 			if (this.l) return this.l.search(k, comparator, treeRefForNearestSearch);
-		} else if (
-			comparator ? comparator.apply(k, comparator.length === 1 ? [this.k, k] : [k, this.k]) > 0 : k > this.k
-		) {
+		} else if (comparatorResult !== undefined ? comparatorResult > 0 : k > this.k) {
 			if (this.r) return this.r.search(k, comparator, treeRefForNearestSearch);
-		} else if (
-			this.k !== undefined &&
-			(comparator ? comparator.apply(k, comparator.length === 1 ? [this.k, k] : [k, this.k]) === 0 : this.k === k)
-		) {
-			return this;
-		}
+		} else return this;
 	}
 
 	/**
@@ -141,18 +136,15 @@ export class Node<
 	 * @returns the new root
 	 */
 	public set(k: K, v: V, reporter: { success: boolean }, comparator: (a: K, b: K) => number): Node<K, V> {
-		if (comparator ? comparator.apply(k, comparator.length === 1 ? [this.k, k] : [k, this.k]) < 0 : k < this.k) {
+		const comparatorResult: number =
+			comparator && comparator.apply(k, comparator.length === 1 ? [this.k, k] : [k, this.k]);
+		if (comparatorResult !== undefined ? comparatorResult < 0 : k < this.k) {
 			if (this.l) this.l = this.l.set(k, v, reporter, comparator);
 			else this.l = new Node<K, V>(k, v);
-		} else if (
-			comparator ? comparator.apply(k, comparator.length === 1 ? [this.k, k] : [k, this.k]) > 0 : k > this.k
-		) {
+		} else if (comparatorResult !== undefined ? comparatorResult > 0 : k > this.k) {
 			if (this.r) this.r = this.r.set(k, v, reporter, comparator);
 			else this.r = new Node<K, V>(k, v);
-		} else if (
-			(this.k === undefined && this.v === undefined) ||
-			(comparator ? comparator.apply(k, comparator.length === 1 ? [this.k, k] : [k, this.k]) === 0 : this.k === k)
-		) {
+		} else {
 			this.k = k;
 			this.v = v;
 			if (reporter) reporter.success = false;
@@ -167,16 +159,13 @@ export class Node<
 	 * @returns the new root
 	 */
 	public remove(k: K, reporter: { removed: V }, comparator: (a: K, b: K) => number): Node<K, V> {
-		if (comparator ? comparator.apply(k, comparator.length === 1 ? [this.k, k] : [k, this.k]) < 0 : k < this.k) {
+		const comparatorResult: number =
+			comparator && comparator.apply(k, comparator.length === 1 ? [this.k, k] : [k, this.k]);
+		if (comparatorResult !== undefined ? comparatorResult < 0 : k < this.k) {
 			if (this.l) this.l = this.l.remove(k, reporter, comparator);
-		} else if (
-			comparator ? comparator.apply(k, comparator.length === 1 ? [this.k, k] : [k, this.k]) > 0 : k > this.k
-		) {
+		} else if (comparatorResult !== undefined ? comparatorResult > 0 : k > this.k) {
 			if (this.r) this.r = this.r.remove(k, reporter, comparator);
-		} else if (
-			this.k !== undefined &&
-			(comparator ? comparator.apply(k, comparator.length === 1 ? [this.k, k] : [k, this.k]) === 0 : this.k === k)
-		) {
+		} else {
 			if (reporter) reporter.removed = this.v;
 			if (!this.l && !this.r) {
 				return undefined;
