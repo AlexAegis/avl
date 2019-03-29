@@ -3,9 +3,9 @@ import 'reflect-metadata';
 import { jsonObject, jsonMember } from 'typedjson';
 import { Comparable } from '../../src/interface/comparable.interface';
 
-@jsonObject
+// @jsonObject
 export class Basic {
-	@jsonMember
+	// @jsonMember
 	public n: number;
 	constructor(n?: number) {
 		this.n = n;

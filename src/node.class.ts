@@ -112,8 +112,9 @@ export class Node<
 				? comparator.apply(k, comparator.length === 1 ? [this.k, k] : [k, this.k])
 				: hashOrReturn(k as any) - hashOrReturn(this.k as any);
 			if (
-				((!nearestRight && difference >= 0) || (nearestRight && difference <= 0)) &&
-				Math.abs(treeRefForNearestSearch.difference) >= Math.abs(difference)
+				treeRefForNearestSearch.difference === Infinity ||
+				(((!nearestRight && difference >= 0) || (nearestRight && difference <= 0)) &&
+					Math.abs(treeRefForNearestSearch.difference) >= Math.abs(difference))
 			) {
 				treeRefForNearestSearch.nearest = this;
 				treeRefForNearestSearch.difference = difference;

@@ -10,9 +10,10 @@ tree.set(new BasicComparable(0), new Basic(1));
 tree.set(new BasicComparable(1), new Basic(2));
 tree.set(new BasicComparable(2), new Basic(4));
 tree.set(new BasicComparable(3), new Basic(5));
-console.log(tree.toArray().map(b => b.toString()));
-console.log(`hasPrototype? ${new BasicComparable(1).compareTo.prototype !== undefined} has can this bound? true`);
-console.log(new BasicComparable(1).compareTo.length);
+console.log(tree);
+console.log(tree.enclosingNodes(new BasicComparable(2.5)));
+console.log(tree);
+/*
 const tree2 = new Tree<Basic, Basic>((a, b) => a.n - b.n);
 tree2.set(new Basic(0), new Basic(1));
 tree2.set(new Basic(1), new Basic(2));
@@ -40,7 +41,7 @@ tree4.set(new BasicComparable(3), new Basic(5));
 console.log(tree4.toArray().map(b => b.toString()));
 console.log(`hasPrototype? ${tree4.comparator.prototype !== undefined} has can this bound? true`);
 console.log(tree4.comparator.length);
-
+*/
 /*
 
 

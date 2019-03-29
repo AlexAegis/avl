@@ -142,9 +142,7 @@ export class Tree<
 		} else {
 			const fin = this.finalOperators(k);
 			this.nearest = this.root;
-			this.difference = fin.comp
-				? fin.comp.apply(fin.comp.length === 1 ? [this.root.k, fin.key] : [k, this.root.k])
-				: hashOrReturn(fin.key as any) - hashOrReturn(this.root.k as any);
+			this.difference = Infinity;
 			this.root.search(fin.key, fin.comp, fromRight, this);
 			return this.nearest;
 		}
@@ -232,10 +230,8 @@ export class Tree<
 	}
 
 	private finalOperators(k: K): { key: K; comp: (a: K, b: K) => number } {
-		const result = { key: undefined as K, comp: this.comparator };
-
 		// 1) Explicit comparator
-		result.comp = this.comparator;
+		const result = { key: undefined as K, comp: this.comparator };
 
 		// 2) Implicit comparator
 		if (result.comp === undefined && ((k as unknown) as Comparable<K>).compareTo) {

@@ -2,16 +2,16 @@ import 'reflect-metadata';
 import { jsonObject, jsonMember } from 'typedjson';
 import { Comparable } from '../../src/interface/comparable.interface';
 
-@jsonObject
+// @jsonObject
 export class BasicComparable {
-	@jsonMember
+	// @jsonMember
 	public n: number;
 	public constructor(n?: number) {
 		this.n = n;
 	}
 
 	public compareTo(other: BasicComparable): number {
-		// console.log(`this.n: ${this.n} other.n: ${other.n}`); // another.n: ${another.n}`);
+		// console.log(`this.n: ${this !== undefined ? this.n : 'undef'} other.n: ${other ? other.n : 'undef'}`); // another.n: ${another.n}`);
 		return this.n - other.n;
 	}
 
