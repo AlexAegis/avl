@@ -102,7 +102,6 @@ export class Node<
 	public search(
 		k: K,
 		comparator: (a: K, b: K) => number,
-		nearestRight?: boolean, // on true: right, on false: left, undefined: whatever.
 		treeRefForNearestSearch?: Tree<K, V> // Only used when searching for nearest values as it contains temporary fields.
 	): Node<K, V> {
 		// When searching for nearest values, simply track each value we are traversing while searching as we always touch them on traversal
@@ -111,22 +110,24 @@ export class Node<
 			const difference = comparator
 				? comparator.apply(k, comparator.length === 1 ? [this.k, k] : [k, this.k])
 				: hashOrReturn(k as any) - hashOrReturn(this.k as any);
-			if (
-				treeRefForNearestSearch.difference === Infinity ||
-				(((!nearestRight && difference >= 0) || (nearestRight && difference <= 0)) &&
-					Math.abs(treeRefForNearestSearch.difference) >= Math.abs(difference))
-			) {
-				treeRefForNearestSearch.nearest = this;
-				treeRefForNearestSearch.difference = difference;
+
+			if (difference >= 0 && Math.abs(treeRefForNearestSearch.differenceFromRight) >= Math.abs(difference)) {
+				treeRefForNearestSearch.nearestFromRight = this;
+				treeRefForNearestSearch.differenceFromRight = difference;
+			}
+
+			if (difference <= 0 && Math.abs(treeRefForNearestSearch.differenceFromLeft) >= Math.abs(difference)) {
+				treeRefForNearestSearch.nearestFromLeft = this;
+				treeRefForNearestSearch.differenceFromLeft = difference;
 			}
 		}
 
 		if (comparator ? comparator.apply(k, comparator.length === 1 ? [this.k, k] : [k, this.k]) < 0 : k < this.k) {
-			if (this.l) return this.l.search(k, comparator, nearestRight, treeRefForNearestSearch);
+			if (this.l) return this.l.search(k, comparator, treeRefForNearestSearch);
 		} else if (
 			comparator ? comparator.apply(k, comparator.length === 1 ? [this.k, k] : [k, this.k]) > 0 : k > this.k
 		) {
-			if (this.r) return this.r.search(k, comparator, nearestRight, treeRefForNearestSearch);
+			if (this.r) return this.r.search(k, comparator, treeRefForNearestSearch);
 		} else if (
 			this.k !== undefined &&
 			(comparator ? comparator.apply(k, comparator.length === 1 ? [this.k, k] : [k, this.k]) === 0 : this.k === k)

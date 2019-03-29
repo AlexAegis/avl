@@ -6,12 +6,12 @@ import { Tree } from '../src/tree.class';
 import { BasicComparable } from './model/basic-comparable.class';
 
 const tree = new Tree<BasicComparable, Basic>();
-tree.set(new BasicComparable(0), new Basic(1));
-tree.set(new BasicComparable(1), new Basic(2));
-tree.set(new BasicComparable(2), new Basic(4));
-tree.set(new BasicComparable(3), new Basic(5));
+tree.set(new BasicComparable(1546383600), new Basic(1)); // left
+tree.set(new BasicComparable(1546470000), new Basic(2)); // root
+tree.set(new BasicComparable(1546556400), new Basic(4)); // right
+tree.set(new BasicComparable(1546642800), new Basic(5)); // right
 console.log(tree);
-console.log(tree.enclosingNodes(new BasicComparable(2.5)));
+console.log(tree.enclosingNodes(new BasicComparable(1546499400)));
 console.log(tree);
 /*
 const tree2 = new Tree<Basic, Basic>((a, b) => a.n - b.n);

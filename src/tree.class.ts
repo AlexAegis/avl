@@ -57,8 +57,10 @@ export class Tree<
 	@jsonMember
 	private root: Node<K, V>;
 
-	difference = Infinity;
-	nearest: Node<K, V>;
+	differenceFromRight = Infinity;
+	differenceFromLeft = Infinity;
+	nearestFromRight: Node<K, V>;
+	nearestFromLeft: Node<K, V>;
 
 	/**
 	 * ! WARNING: Limited capabilities!
@@ -109,45 +111,42 @@ export class Tree<
 	}
 
 	public enclosingNodes(k: K): Enclosing<Node<K, V>> {
-		return { last: this.lastNodeBefore(k), first: this.firstNodeFrom(k) };
+		this.nearestFromRight = undefined;
+		this.nearestFromLeft = undefined;
+		this.differenceFromRight = Infinity;
+		this.differenceFromLeft = Infinity;
+		if (!this.root) {
+			return;
+		} else {
+			const fin = this.finalOperators(k);
+			this.root.search(fin.key, fin.comp, this);
+			return { last: this.nearestFromLeft, first: this.nearestFromRight };
+		}
 	}
 
 	public lastBefore(k: K): V {
-		const near = this.nearestNodeFrom(k, false);
-		return near ? near.v : undefined;
+		const lastNode = this.lastNodeBefore(k);
+		return lastNode && lastNode.v;
 	}
 
 	public lastNodeBefore(k: K): Node<K, V> {
-		return this.nearestNodeFrom(k, false);
+		return this.enclosingNodes(k).last;
 	}
 
 	/**
 	 * Returns the first value it founds on key or after that
 	 */
 	public firstFrom(k: K): V {
-		const near = this.nearestNodeFrom(k, true);
-		return near ? near.v : undefined;
+		const firstNode = this.firstNodeFrom(k);
+		return firstNode && firstNode.v;
 	}
 
 	/**
 	 * Returns the first node it founds on key or after that
 	 */
 	public firstNodeFrom(k: K): Node<K, V> {
-		return this.nearestNodeFrom(k, true);
+		return this.enclosingNodes(k).first;
 	}
-
-	private nearestNodeFrom(k: K, fromRight: boolean): Node<K, V> {
-		if (!this.root) {
-			return;
-		} else {
-			const fin = this.finalOperators(k);
-			this.nearest = this.root;
-			this.difference = Infinity;
-			this.root.search(fin.key, fin.comp, fromRight, this);
-			return this.nearest;
-		}
-	}
-
 	/**
 	 * Because it's marked with @ToJSon we can sumply use JSON.stringify.
 	 * I'm putting this method here for brevity
