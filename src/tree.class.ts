@@ -7,7 +7,6 @@ import { ConvertError } from './error/convert.error';
 import { CompareError } from './error/compare.error';
 import { jsonObject, jsonMember, toJson, TypedJSON } from 'typedjson';
 import { Constructor } from 'typedjson/js/typedjson/types';
-import { hashOrReturn } from './helper/hash.function';
 
 /**
  * AVL Tree

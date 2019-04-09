@@ -5,7 +5,7 @@ import { Tree } from '../src/tree.class';
 describe('Bad Converter and Convertable tests, where the interface takes priority', () => {
 	let tree: Tree<any, BasicConvertable>;
 	beforeEach(() => {
-		tree = new Tree<any, BasicConvertable>(undefined, bc => this.n);
+		tree = new Tree<any, BasicConvertable>(undefined, bc => bc.n);
 		tree.push(new BasicConvertable(1));
 		tree.push(new BasicConvertable(2));
 		tree.push(new BasicConvertable(3));
