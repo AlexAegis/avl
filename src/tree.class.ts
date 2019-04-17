@@ -294,6 +294,21 @@ export class Tree<
 	public max(): V {
 		return this.root ? this.root.last().value : undefined;
 	}
+
+	/**
+	 * Returns the first node.
+	 */
+	public first(): Node<K, V> {
+		return this.root && this.root.first();
+	}
+
+	/**
+	 * Returns the last node.
+	 */
+	public last(): Node<K, V> {
+		return this.root && this.root.last();
+	}
+
 	/**
 	 * Calls a function on each element of the Tree, in order.
 	 * There is an optional index
