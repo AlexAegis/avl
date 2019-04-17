@@ -198,9 +198,16 @@ export class Tree<
 	 * Returns with the value on the supplied key. undefined if there is no value on that key
 	 */
 	public get(key: K): V {
+		const node = this.getNode(key);
+		return node ? node.v : undefined;
+	}
+
+	/**
+	 * Returns with the node on the supplied key. undefined if there is no node on that key
+	 */
+	public getNode(key: K): Node<K, V> {
 		const fin = this.finalOperators(key);
-		const node = this.root.search(fin.key, fin.comp);
-		if (this.root) return node ? node.v : undefined;
+		return this.root && this.root.search(fin.key, fin.comp);
 	}
 
 	public remove(key: K): V {
@@ -307,6 +314,25 @@ export class Tree<
 	 */
 	public last(): Node<K, V> {
 		return this.root && this.root.last();
+	}
+
+	/**
+	 * This method will move the node object found at the key to the correct position in the tree.
+	 * This does not reconstruct the object.
+	 *
+	 * If you try to move the node to an key thats already exists the method will do nothing
+	 */
+	public moveNode(from: K, to: K): boolean {
+		const fin = this.finalOperators(to);
+		const node = this.getNode(from);
+		const toNode = this.getNode(to);
+		if (this.root && node && !toNode) {
+			const report = { success: true };
+			this.remove(node.key);
+			node.k = to;
+			this.root = this.root.set(node.k, node.v, report, fin.comp, node);
+			return report.success;
+		} else return false;
 	}
 
 	/**

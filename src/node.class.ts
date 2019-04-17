@@ -135,23 +135,33 @@ export class Node<
 	 * Sets the key to a specific value. Inserts the node in a key-order respecting manner
 	 * @returns the new root
 	 */
-	public set(k: K, v: V, reporter: { success: boolean }, comparator: (a: K, b: K) => number): Node<K, V> {
+	public set(
+		k: K,
+		v: V,
+		reporter: { success: boolean },
+		comparator: (a: K, b: K) => number,
+		existing?: Node<K, V>
+	): Node<K, V> {
 		const comparatorResult: number =
 			comparator && comparator.apply(k, comparator.length === 1 ? [this.k, k] : [k, this.k]);
 		if (comparatorResult !== undefined ? comparatorResult < 0 : k < this.k) {
-			if (this.l) this.l = this.l.set(k, v, reporter, comparator);
-			else this.l = new Node<K, V>(k, v);
+			if (this.l) this.l = this.l.set(k, v, reporter, comparator, existing);
+			else this.l = existing !== undefined ? existing : new Node<K, V>(k, v);
 		} else if (comparatorResult !== undefined ? comparatorResult > 0 : k > this.k) {
-			if (this.r) this.r = this.r.set(k, v, reporter, comparator);
-			else this.r = new Node<K, V>(k, v);
+			if (this.r) this.r = this.r.set(k, v, reporter, comparator, existing);
+			else this.r = existing !== undefined ? existing : new Node<K, V>(k, v);
 		} else {
-			this.k = k;
-			this.v = v;
+			if (existing === undefined) {
+				this.k = k;
+				this.v = v;
+			}
 			if (reporter) reporter.success = false;
 		}
 		this.updateHeight();
 		return this.rebalance();
 	}
+
+	public lower(node: Node<K, V>, comparator: (a: K, b: K) => number) {}
 
 	/**
 	 * Removes a node from the tree.
