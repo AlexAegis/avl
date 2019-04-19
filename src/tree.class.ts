@@ -377,6 +377,10 @@ export class Tree<
 		if (this.root) yield* this.root.nodes();
 	}
 
+	public *reverseNodes(): IterableIterator<Node<K, V>> {
+		if (this.root) yield* this.root.reverseNodes();
+	}
+
 	public toArray(): Array<V> {
 		const arr: Array<V> = [];
 		for (const v of this) arr.push(v);

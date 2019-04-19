@@ -57,4 +57,12 @@ describe('Comparable tests', () => {
 		];
 		expect(tree.put(...val)).to.be.false;
 	});
+
+	it('should be able to remove elements', () => {
+		const originalLength = tree.length;
+		tree.remove(new BasicComparable(2));
+		const afterRemoveLength = tree.length;
+		expect(originalLength).to.not.equal(afterRemoveLength);
+		expect(originalLength - 1).to.equal(afterRemoveLength);
+	});
 });

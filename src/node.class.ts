@@ -71,6 +71,12 @@ export class Node<
 		if (this.r) yield* this.r.nodes();
 	}
 
+	public *reverseNodes(): IterableIterator<Node<K, V>> {
+		if (this.r) yield* this.r.reverseNodes();
+		yield this;
+		if (this.l) yield* this.l.reverseNodes();
+	}
+
 	/**
 	 * Returns/ the first element.
 	 * Complexity: O(1)
