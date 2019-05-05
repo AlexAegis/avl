@@ -2,7 +2,7 @@
 	"name": "@alexaegis/avl",
 	"displayName": "AVL Tree",
 	"description": "Flexible AVL Tree for TypeScript",
-	"version": "1.6.2",
+	"version": "1.6.3",
 	"private": false,
 	"license": "mit",
 	"main": "./dist/index.js",

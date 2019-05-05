@@ -121,10 +121,8 @@ export class Node<
 			if (difference >= 0 && Math.abs(treeRefForNearestSearch.differenceFromRight) >= Math.abs(difference)) {
 				treeRefForNearestSearch.nearestFromLeft = this;
 				treeRefForNearestSearch.differenceFromLeft = difference;
-			} else if (
-				difference <= 0 &&
-				Math.abs(treeRefForNearestSearch.differenceFromLeft) >= Math.abs(difference)
-			) {
+			}
+			if (difference <= 0 && Math.abs(treeRefForNearestSearch.differenceFromLeft) >= Math.abs(difference)) {
 				treeRefForNearestSearch.nearestFromRight = this;
 				treeRefForNearestSearch.differenceFromRight = difference;
 			}
