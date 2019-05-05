@@ -119,14 +119,14 @@ export class Node<
 					? hashOrReturn(k as any) - hashOrReturn(this.k as any)
 					: comparatorResult;
 			if (difference >= 0 && Math.abs(treeRefForNearestSearch.differenceFromRight) >= Math.abs(difference)) {
-				treeRefForNearestSearch.nearestFromRight = this;
-				treeRefForNearestSearch.differenceFromRight = difference;
+				treeRefForNearestSearch.nearestFromLeft = this;
+				treeRefForNearestSearch.differenceFromLeft = difference;
 			} else if (
 				difference <= 0 &&
 				Math.abs(treeRefForNearestSearch.differenceFromLeft) >= Math.abs(difference)
 			) {
-				treeRefForNearestSearch.nearestFromLeft = this;
-				treeRefForNearestSearch.differenceFromLeft = difference;
+				treeRefForNearestSearch.nearestFromRight = this;
+				treeRefForNearestSearch.differenceFromRight = difference;
 			}
 		}
 
