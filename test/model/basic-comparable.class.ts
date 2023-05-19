@@ -1,6 +1,6 @@
 export class BasicComparable {
 	public n: number;
-	public constructor(n?: number) {
+	public constructor(n: number) {
 		this.n = n;
 	}
 

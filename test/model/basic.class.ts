@@ -1,6 +1,6 @@
 export class Basic {
 	public n: number;
-	constructor(n?: number) {
+	constructor(n: number) {
 		this.n = n;
 	}
 

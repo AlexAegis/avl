@@ -1,12 +1,11 @@
 import 'reflect-metadata';
-import { Enclosing } from './type/enclosing.type';
-import { Comparable } from './interface/comparable.interface';
-import { Node } from './node.class';
-import { Convertable } from './interface/convertable.interface';
-import { ConvertError } from './error/convert.error';
+import { Constructor, TypedJSON, jsonMember, jsonObject, toJson } from 'typedjson';
 import { CompareError } from './error/compare.error';
-import { jsonObject, jsonMember, toJson, TypedJSON } from 'typedjson';
-import { Constructor } from 'typedjson/js/typedjson/types';
+import { ConvertError } from './error/convert.error';
+import { Comparable } from './interface/comparable.interface';
+import { Convertable } from './interface/convertable.interface';
+import { Node } from './node.class';
+import { Enclosing } from './type/enclosing.type';
 
 /**
  * AVL Tree
@@ -94,7 +93,7 @@ export class Tree<
 		...extra: Array<Constructor<any>>
 	): Tree<K, V> {
 		return TypedJSON.parse<Tree<K, V>>(tree, Tree, {
-			knownTypes: [Number, String, keyType, valueType, ...extra].filter(val => val !== undefined)
+			knownTypes: [Number, String, keyType, valueType, ...extra].filter((val) => val !== undefined),
 		});
 	}
 
@@ -239,8 +238,8 @@ export class Tree<
 		const result = { key: undefined as K, comp: this.comparator };
 
 		// 2) Implicit comparator
-		if (result.comp === undefined && ((k as unknown) as Comparable<K>).compareTo) {
-			result.comp = ((k as unknown) as Comparable<K>).compareTo;
+		if (result.comp === undefined && (k as unknown as Comparable<K>).compareTo) {
+			result.comp = (k as unknown as Comparable<K>).compareTo;
 		}
 
 		if (!result.comp) {
@@ -263,7 +262,7 @@ export class Tree<
 	 * If you want a permament converter use the opts or just set the converter field of the Tree
 	 * TODO: bigint option if supported
 	 */
-	private convert(value: V & K | Convertable<K>): K {
+	private convert(value: (V & K) | Convertable<K>): K {
 		let k: K;
 
 		if (typeof value === 'number' || typeof value === 'string') k = value as K;
